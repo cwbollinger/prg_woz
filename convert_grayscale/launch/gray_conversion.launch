@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="usb_cam" name="camera" type="usb_cam_node"/>
+  <node pkg="convert_grayscale" name="grayscale_converter" type="convert.py">
+    <remap to="/camera/image_raw" from="color_image"/>
+  </node>
+  <node pkg="image_transport" name="republish" type="republish" args="raw in:=/gray_image compressed out:=/gray_image"/>
+</launch>
