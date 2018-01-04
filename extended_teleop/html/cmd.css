@@ -1,0 +1,34 @@
+.cmd-container{
+   overflow:hidden;
+   position:relative;
+   font-family:"Consolas","Andale Mono","Courier New","Courier",monospace;
+   background-color:#333; padding:7px; }
+.cmd-input{
+   position:relative;
+   resize:none;width:100%;
+   border:none;
+   background-color:#333;
+   outline:none;
+   font-family:"Consolas","Andale Mono","Courier New","Courier",monospace;
+   color:white;
+   overflow:hidden;
+}
+#cmd-div .cmd-input{
+   background-color:#333;
+}
+.cmd-window{
+   overflow:auto;
+   white-space:pre-wrap;
+   white-space:-moz-pre-wrap !important;
+   white-space:-pre-wrap;
+   white-space:-o-pre-wrap;
+   word-wrap:break-word;
+}
+.cmd-line{
+   padding-bottom:4px;
+   padding-top:4px;
+   color:white;
+} .cmd-number{color:#77f364;}
+.cmd-error{color:#ef7577;}
+.cmd-string{color:#64bbeb;}
+.cmd-undefined{color:#b7b7b7;}

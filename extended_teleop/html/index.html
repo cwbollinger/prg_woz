@@ -8,45 +8,7 @@
     <!-- Compressed CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css"/>
-    <style>
-      .cmd-container{
-         overflow:hidden;
-         position:relative;
-         font-family:"Consolas","Andale Mono","Courier New","Courier",monospace;
-         background-color:#333;
-         padding:7px;
-      }
-      .cmd-input{
-         position:relative;
-         resize:none;width:100%;
-         border:none;
-         background-color:#333;
-         outline:none;
-         font-family:"Consolas","Andale Mono","Courier New","Courier",monospace;
-         color:white;
-         overflow:hidden;
-      }
-      #cmd-div .cmd-input{
-         background-color:#333;
-      }
-      .cmd-window{
-         overflow:auto;
-         white-space:pre-wrap;
-         white-space:-moz-pre-wrap !important;
-         white-space:-pre-wrap;
-         white-space:-o-pre-wrap;
-         word-wrap:break-word;
-      }
-      .cmd-line{
-         padding-bottom:4px;
-         padding-top:4px;
-         color:white;
-      }
-      .cmd-number{color:#77f364;}
-      .cmd-error{color:#ef7577;}
-      .cmd-string{color:#64bbeb;}
-      .cmd-undefined{color:#b7b7b7;}
-    </style>
+    <link rel="stylesheet" href="./cmd.css"/>
     <!-- Compressed JavaScript -->
     <script src="https://rawgit.com/danguer/blog-examples/master/js/base64-binary.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
@@ -58,6 +20,8 @@
     <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
     <script src="./quotes.js"></script>
     <script>
+      const CAMERA_TOPIC="/camera/rgb/image_raw_throttle";
+      const CAMERA_QUALITY="5";
       /**
        * Setup all GUI elements when the page is loaded. 
        */
@@ -67,7 +31,7 @@
           url : "ws://"+window.location.hostname+":9090"
         });
         // Setup video stream
-        $("#video-display").attr("src", "http://"+window.location.hostname+":8080/stream?topic=/camera/rgb/image_raw_throttle&quality=5");
+        $("#video-display").attr("src", "http://"+window.location.hostname+":8080/stream?topic="+CAMERA_TOPIC+"&quality="+CAMERA_QUALITY);
         // Initialize the teleop.
         let teleop = new KEYBOARDTELEOP.Teleop({
           ros : ros,
@@ -139,6 +103,13 @@
         $('#speed-label').html('Speed: ' + ($('#speed-slider').slider('value')) + '%');
         teleop.scale = ($('#speed-slider').slider('value') / 100.0);
 
+        const chatHistory = $('#chat-history');
+        function append_chat(text) {
+          let history = chatHistory.val();
+          history += "\n"+text;
+          chatHistory.val(history);
+          chatHistory.scrollTop(chatHistory[0].scrollHeight);
+        }
 
         let recording = false;
         function start_recording(filename) {
@@ -163,6 +134,7 @@
             const session = recordSession.val();
             const bagName = recName+'_'+session+'.bag';
             if(recording) {
+              append_chat("SESSION RECORDING ENDED");
               stop_recording(bagName);
               recordName.prop('disabled', false);
               recordSession.prop('disabled', false);
@@ -170,6 +142,7 @@
               recordBtn.addClass("success");
               recordBtn.removeClass("alert");
             } else {
+              append_chat("SESSION RECORDING STARTED");
               recordName.prop('disabled', true);
               recordSession.prop('disabled', true);
               start_recording(bagName);
@@ -180,6 +153,7 @@
         });
 
         function send_speech(speech_string) {
+          append_chat(speech_string);
           // sound -3 is "SAY"
           // command 1 is "PLAY_ONCE"
           speechPub.publish(new ROSLIB.Message({
@@ -193,7 +167,6 @@
         $('.speech-control').click(function(event) {
           const sayings = SPEECH[event.target.id];
           const sentence = sayings[Math.floor(Math.random() * sayings.length)];
-          alert(sentence);
           send_speech(sentence);
         });
 
@@ -214,6 +187,7 @@
         }
 
         $('#bump').click(function(){
+          append_chat("'BUMP' Motion Triggered");
           send_sequence([
             {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
             {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
@@ -226,6 +200,7 @@
         });
 
         $('#nudge').click(function(){
+          append_chat("'NUDGE' Motion Triggered");
           send_sequence([
             {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
             {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
@@ -238,6 +213,7 @@
         });
 
         $('#rotate').click(function(){
+          append_chat("'ROTATE' Motion Triggered");
           send_sequence([
             {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
             {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
@@ -259,6 +235,7 @@
         });
 
         $('#shake').click(function(){
+          append_chat("'SHAKE' Motion Triggered");
           send_sequence([
             {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
             {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
@@ -283,6 +260,14 @@
             {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.5}},
             {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}
           ], 2000);
+        });
+
+        $('#chat-input').on('keydown', function(ev) {
+          if(ev.which === 13) {
+            send_speech($(this).val());
+            $(this).val("");
+            return false;
+          }
         });
       }
     </script>
@@ -331,8 +316,8 @@
           </div>
           <div class="cell medium-4">
             <div class="grid-y grid-padding-y">
-              <div class="cell medium-6">
-                <img id="video-display">
+              <div class="cell auto">
+                <img id="video-display" style="min-height:100%;min-width:100%"/>
               </div>
               <div class="cell medium-2">
                 <div id="speed-label"></div>
@@ -350,8 +335,8 @@
         </div>
       </div>
       <div class="cell medium-auto medium-cell-block-container">
-        <textarea readonly></textarea>
-        <input placeholder="Type a Message"></input>
+        <textarea id="chat-history" readonly style="flex:1"></textarea>
+        <input id="chat-input" placeholder="Type a Message"></input>
       </div>
       <div class="cell shrink footer">
         <div class="grid-x grid-padding-x">
