@@ -1,0 +1,32 @@
+{
+  "name": "resolutionbot-control",
+  "version": "0.0.1",
+  "description": "Experimental Tools for Turtlebot Teleop",
+  "main": "scripts/audio_server.js",
+  "scripts": {
+    "test": "node tests/test.js",
+    "build": "./node_modules/.bin/webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cwbollinger/prg_woz.git"
+  },
+  "keywords": [
+    "roslibjs",
+    "nodejs"
+  ],
+  "author": "Chris Bollinger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cwbollinger/prg_woz/issues"
+  },
+  "homepage": "https://github.com/cwbollinger/prg_woz#readme",
+  "dependencies": {
+    "base64-arraybuffer": "^0.1.5",
+    "eventemitter2": "^4.1.0",
+    "roslib": "https://github.com/RobotWebTools/roslibjs.git"
+  },
+  "devDependencies": {
+    "webpack": "^2.6.1"
+  }
+}
