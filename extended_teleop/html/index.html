@@ -17,8 +17,8 @@
     <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
     <script src="http://static.robotwebtools.org/roslibjs/current/roslib.js"></script>
     <script src="./teleop.js"></script>
-    <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
     <script src="./quotes.js"></script>
+    <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
     <script>
       const CAMERA_TOPIC="/camera/rgb/image_raw_throttle";
       const CAMERA_QUALITY="5";
@@ -38,7 +38,18 @@
           topic : '/cmd_vel_mux/input/teleop'
         });
 
-        $('#teleop-control').focus(); // start with control div focused
+        const teleopCtrl = $('#teleop-control');
+        teleopCtrl.focus(function() {
+          teleopCtrl.text("Teleop Control Active");
+              teleopCtrl.addClass("success");
+              teleopCtrl.removeClass("alert");
+        });
+        teleopCtrl.focusout(function() {
+          teleopCtrl.text("Click Here to Engage Keyboard Teleop");
+              teleopCtrl.addClass("alert");
+              teleopCtrl.removeClass("success");
+        });
+        teleopCtrl.focus(); // start with control div focused
 
         /* Come back to this later
         let audioListener = new ROSLIB.Topic({
@@ -105,9 +116,9 @@
 
         const chatHistory = $('#chat-history');
         function append_chat(text) {
-          let history = chatHistory.val();
-          history += "\n"+text;
-          chatHistory.val(history);
+          let history = chatHistory.text();
+          history += text+"\n";
+          chatHistory.text(history);
           chatHistory.scrollTop(chatHistory[0].scrollHeight);
         }
 
@@ -274,13 +285,13 @@
   </head>
   <body>
 
-    <div class="grid-y medium-grid-frame">
-      <div class="cell shrink header medium-cell-block-container">
-        <div class="grid-x grid-padding-x">
+    <div class="grid-y grid-frame">
+      <div class="cell cell-block-container medium-7">
+        <div class="grid-x">
           <div class="cell medium-4">
-            <div class="grid-y card medium-grid-frame">
+            <div class="grid-y grid-frame">
               <div class="cell medium-3">
-                <h3>Motion Controls</h3>
+                <h4>Motion Controls</h4>
                 <div class="small expanded button-group">
                   <button type="button" class="button motion-control" id="bump">Bump</button>
                   <button type="button" class="button motion-control" id="nudge">Nudge</button>
@@ -288,28 +299,32 @@
                   <button type="button" class="button motion-control" id="shake">Shake</button>
                 </div>
               </div>
-              <div class="cell medium-11">
-                <h3>Audio Controls</h3>
+              <div class="cell medium-9">
+                <h4>Audio Controls</h4>
+                <div>Basics</div>
                 <div class="small expanded button-group">
                   <button type="button" id="say-hello" class="button speech-control">Hello</button>
                   <button type="button" id="say-great" class="button speech-control">Great</button>
                   <button type="button" id="say-ok" class="button speech-control">Ok</a>
                   <button type="button" id="say-goodbye" class="button speech-control">Goodbye</button>
                 </div>
+                <div>Questions</div>
                 <div class="small expanded button-group">
-                  <button type="button" id="say-joke" class="button speech-control">Joke?</button>
+                  <button type="button" id="say-joke" class="button speech-control">Joke</button>
                   <button type="button" id="say-exercise" class="button speech-control">Exercise</button>
-                  <button type="button" id="say-snack" class="button speech-control">Snack?</button>
-                  <button type="button" id="say-sure" class="button speech-control">Sure?</button>
+                  <button type="button" id="say-snack" class="button speech-control">Snack</button>
+                  <button type="button" id="say-sure" class="button speech-control">Sure</button>
                 </div>
+                <div>Facts</div>
                 <div class="small expanded button-group">
-                  <button type="button" id="say-emotional-fact" class="button speech-control">E-fact</button>
-                  <button type="button" id="say-physical-fact" class="button speech-control">P-fact</button>
-                  <button type="button" id="say-nutrition-fact" class="button speech-control">N-fact</button>
+                  <button type="button" id="say-emotional-fact" class="button speech-control">Emotional</button>
+                  <button type="button" id="say-physical-fact" class="button speech-control">Physical</button>
+                  <button type="button" id="say-nutrition-fact" class="button speech-control">Nutritional</button>
                 </div>
+                <div>Guided Orders</div>
                 <div class="small expanded button-group">
-                  <button type="button" id="say-pushups" class="button speech-control">Pushups</button>
-                  <button type="button" id="say-jumping-jacks" class="button speech-control">JumpingJacks</button>
+                  <button type="button" id="say-pushups" class="button speech-control">Pushup</button>
+                  <button type="button" id="say-jumping-jacks" class="button speech-control">Jumping</button>
                 </div>
               </div>
             </div>
@@ -317,38 +332,46 @@
           <div class="cell medium-4">
             <div class="grid-y grid-padding-y">
               <div class="cell medium-8">
-                <img id="video-display" style="min-height:100%;min-width:100%"/>
+                <img id="video-display"/>
               </div>
               <div class="cell medium-2">
                 <div id="speed-label"></div>
                 <div id="speed-slider"></div>
               </div>
               <div class="cell medium-2">
-                <div id="teleop-control" tabindex="0">
+                <div id="teleop-control" class="card" tabindex="0" style="text-align:center">
                 Click Here to Engage Keyboard Teleop
                 </div>
               </div>
             </div>
           </div>
-          <div id="cmd-div" class="cell medium-4">
+          <div id="cmd-div" class="cell card medium-4">
           </div>
         </div>
       </div>
-      <div class="cell medium-auto medium-cell-block-container">
-        <textarea id="chat-history" readonly style="flex:1"></textarea>
+      <div class="cell card auto">
+        <div id="chat-history" style="flex:1;overflow-y:scroll;white-space:pre;"/></div>
         <input id="chat-input" placeholder="Type a Message"></input>
       </div>
-      <div class="cell shrink footer">
-        <div class="grid-x grid-padding-x">
-          <div class="cell medium-5">
-            <h3>Session Details</h3>
-            Participant: <input id="record-name" placeholder="Name"/><br/>
-            Session: <input id="record-session" placeholder="Session"/>
+      <div class="cell shrink">
+        <div class="grid-x">
+          <div class="cell card medium-5">
+            <h5>Session Details</h5>
+            <div class="cell grid-x shrink">
+              <div class="cell shrink">
+                <label for="name" class="text-right">Participant:</label>
+                <label for="session_no" class="text-right">Session:</label>
+              </div>
+              <div class="cell medium-6 cell-block-container">
+                <input id="record-name" name="name" placeholder="Name"/>
+                <input id="record-session" name="session_no" placeholder="Session"/>
+              </div>
+            </div>
           </div>
-          <div class="cell medium-2">
+          <div class="cell card medium-2">
             <button type="button" id="record-ctrl" class="success button">Start Recording</button>
           </div>
-          <div class="cell medium-5">
+          <div class="cell card medium-5">
           </div>
         </div>
       </div>

@@ -5,9 +5,7 @@ import os
 import SimpleHTTPServer
 import SocketServer
 
-print(os.getcwd())
 os.chdir('../html')
-print(os.getcwd())
 
 PORT = 8000
 

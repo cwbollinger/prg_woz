@@ -5,7 +5,8 @@
    background-color:#333; padding:7px; }
 .cmd-input{
    position:relative;
-   resize:none;width:100%;
+   resize:none;
+   width:100%;
    border:none;
    background-color:#333;
    outline:none;
