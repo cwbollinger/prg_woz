@@ -2,6 +2,7 @@
   <node pkg="usb_cam" name="camera" type="usb_cam_node">
     <param name="framerate" value="10"/>
     <param name="pixel_format" value="yuyv"/>
+    <param name="video_device" value="/dev/video1"/>
   </node>
   <node pkg="convert_grayscale" name="grayscale_converter" type="convert.py">
     <remap to="/camera/image_raw" from="color_image"/>
