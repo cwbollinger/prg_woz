@@ -20,7 +20,7 @@
     <script src="./quotes.js"></script>
     <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
     <script>
-      const CAMERA_TOPIC="/camera/rgb/image_raw_throttle";
+      const CAMERA_TOPIC="/camera/image_raw";
       const CAMERA_QUALITY="5";
       /**
        * Setup all GUI elements when the page is loaded. 
@@ -32,6 +32,8 @@
         });
         // Setup video stream
         $("#video-display").attr("src", "http://"+window.location.hostname+":8080/stream?topic="+CAMERA_TOPIC+"&quality="+CAMERA_QUALITY);
+        $("#audio-ctrl").attr("src", "http://"+window.location.hostname+":8001");
+        $("#audio-ctrl").attr("type", "audio/mp3");
         // Initialize the teleop.
         let teleop = new KEYBOARDTELEOP.Teleop({
           ros : ros,
@@ -335,6 +337,7 @@
                 <img id="video-display"/>
               </div>
               <div class="cell medium-2">
+                <audio id="audio-ctrl" autoplay></audio>
                 <div id="speed-label"></div>
                 <div id="speed-slider"></div>
               </div>
