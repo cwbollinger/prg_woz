@@ -331,13 +331,13 @@
               </div>
             </div>
           </div>
-          <div class="cell medium-4">
-            <div class="grid-y grid-padding-y">
+          <div class="cell medium-4 medium-cell-block-y">
+            <div class="grid-y">
               <div class="cell medium-8">
                 <img id="video-display"/>
               </div>
               <div class="cell medium-2">
-                <audio id="audio-ctrl" autoplay></audio>
+                <audio id="audio-ctrl" style="width:100%" preload="none" controls autoplay></audio>
                 <div id="speed-label"></div>
                 <div id="speed-slider"></div>
               </div>
@@ -382,7 +382,7 @@
 
     <script>
       $(document).foundation();
-      cmd.init({container:'cmd-div', sandbox:false});
+      //cmd.init({container:'cmd-div', sandbox:false});
       $(document).ready(init);
     </script>
 
