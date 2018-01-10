@@ -114,7 +114,7 @@ GAMEPADTELEOP.Teleop = function(options) {
       }
     });
     cmdVel.publish(twist);
-    tiltPub.publish({'data': tilt});
+    tiltPub.publish(new ROSLIB.Message({'data': tilt}));
 
     // check for changes
     if (oldX !== x || oldY !== y || oldZ !== z) {
