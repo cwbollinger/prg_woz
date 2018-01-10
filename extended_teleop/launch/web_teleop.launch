@@ -1,6 +1,6 @@
 <launch>
   <node name="arduino" pkg="rosserial_python" type="serial_node.py">
-    <param name="port_name" value="/dev/ttyACM0" />
+    <param name="port" value="/dev/ttyACM0" />
   </node>
   <node pkg="usb_cam" name="camera" type="usb_cam_node">
     <param name="framerate" value="10"/>
