@@ -21,7 +21,7 @@
     <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
     <script type="text/javascript">
       const CAMERA_TOPIC="/camera/image_raw";
-      const CAMERA_QUALITY="5";
+      const CAMERA_QUALITY="10";
 
       let teleop = null;
       let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
@@ -99,6 +99,15 @@
        * Setup all GUI elements when the page is loaded. 
        */
       function init() {
+        // Setup audio control
+        const audioCtrl = $("#audio-ctrl");
+        audioCtrl.attr("src", "http://"+window.location.hostname+":8001");
+        audioCtrl.attr("type", "audio/mp3");
+
+        // Setup video stream
+        $("#video-display").attr("src", "http://"+window.location.hostname+":8080/stream?topic="+CAMERA_TOPIC+"&quality="+CAMERA_QUALITY);
+
+
         // Connecting to ROS.
         let ros = new ROSLIB.Ros({
           url : "ws://"+window.location.hostname+":9090"
@@ -137,9 +146,6 @@
           messageType : 'std_msgs/String'
         });
 
-        // Setup video stream
-        $("#video-display").attr("src", "http://"+window.location.hostname+":8080/stream?topic="+CAMERA_TOPIC+"&quality="+CAMERA_QUALITY);
-
         // Create a UI slider using JQuery UI.
         const speedSlider = $("#speed-slider");
         const speedLabel = $("#speed-label");
@@ -147,7 +153,7 @@
           range : 'min',
           min : 0,
           max : 100,
-          value : 90,
+          value : 60,
           slide : function(e, ui) {
             // Change the speed label.
             speedLabel.html('Speed: ' + ui.value + '%');
@@ -234,6 +240,7 @@
           let step = 0;
           let loopTimer;
           const pub = () => {
+            console.log('publishing');
             cmdVel.publish(new ROSLIB.Message(sequence[step]));
             step += 1;
             if (step >= sequence.length) {
@@ -247,6 +254,7 @@
         function triggerMotion(motionId) {
           appendChat("'"+motionId.toUpperCase()+"' Motion Triggered");
           const sequence = MOTION[motionId];
+          console.log('sending sequence');
           sendSequence(sequence, null);
         }
 
@@ -334,7 +342,7 @@
                 <img id="video-display"/>
               </div>
               <div class="cell medium-4">
-                <audio id="audio-ctrl" style="width:100%" preload="none" controls autoplay></audio>
+                <audio id="audio-ctrl" style="width:100%" controls></audio>
                 <div id="speed-label"></div>
                 <div id="speed-slider"></div>
               </div>
@@ -381,6 +389,7 @@
             console.log(`pressed:${idx}`);
             gamepadButtonHandler(idx);
         });
+        /*
         teleop.on('buttonUp', idx => {
             console.log(`released:${idx}`);
         });
@@ -390,6 +399,7 @@
         teleop.on('changeTilt', tilt => {
             console.log('updatedTilt: '+tilt);
         });
+        */
       });
 
     </script>

@@ -36,7 +36,6 @@ GAMEPADTELEOP.Teleop = function(options) {
 
   // linear x and y movement and angular z movement
   let x = 0;
-  let y = 0;
   let z = 0;
 
   let tilt = 90;
@@ -75,7 +74,6 @@ GAMEPADTELEOP.Teleop = function(options) {
   const handleAxes = function(axes) {
     // used to check for changes in speed
     let oldX = x;
-    let oldY = y;
     let oldZ = z;
     let oldTilt = tilt;
 
@@ -113,15 +111,19 @@ GAMEPADTELEOP.Teleop = function(options) {
         z : 0
       }
     });
-    cmdVel.publish(twist);
-    tiltPub.publish(new ROSLIB.Message({'data': tilt}));
 
+    // only publish if moving or changing to zero from non-zero
+    // prevents teleop from blocking motion on /navi with constant publishing
+    if((oldX !== x) || (oldZ !== z) || (z !== 0) || (x !== 0)) {
+      cmdVel.publish(twist);
+    }
     // check for changes
-    if (oldX !== x || oldY !== y || oldZ !== z) {
+    if (oldX !== x || oldZ !== z) {
       that.emit('change', twist);
     }
     if (oldTilt !== tilt) {
       that.emit('changeTilt', tilt);
+      tiltPub.publish(new ROSLIB.Message({'data': tilt}));
     }
   };
 
