@@ -8,10 +8,11 @@
     <param name="pixel_format" value="yuyv"/>
   </node>
   <node pkg="audio_capture" name="audio_capture" type="audio_capture"/>
+  <node pkg="audio_play" name="audio_stream" type="audio_stream"/>
+  <node pkg="extended_teleop" name="web_audio_server" type="launch_janus.sh"/>
   <node pkg="sound_play" name="sound_play" type="soundplay_node.py"/>
   <node pkg="rosbridge_server" name="socket_server" type="rosbridge_websocket"/>
   <node pkg="extended_teleop" name="web_teleop_server" type="server_script.py" cwd="node"/>
   <node pkg="web_video_server" name="web_video_server" type="web_video_server"/>
-  <node pkg="extended_teleop" name="web_audio_server" type="audio_server.js"/>
   <node pkg="extended_teleop" name="rosbag_control" type="rosbag_remote_record.py" args="-m ros -i '/audio /cmd_vel_mux/input/teleop /cmd_vel_mux/input/navi /robotsound' -f default.bag -d ~/bags -t /rosbagctrl"/>
 </launch>

@@ -25,7 +25,8 @@ var GAMEPADTELEOP = GAMEPADTELEOP || {
 GAMEPADTELEOP.Teleop = function(options) {
   var that = this;
   options = options || {};
-  var ros = options.ros;
+
+  var rosClient = options.rosClient;
   var topic = options.topic || '/cmd_vel';
   var tiltTopic = options.tiltTopic || '/servo';
   // permanent throttle
@@ -39,18 +40,6 @@ GAMEPADTELEOP.Teleop = function(options) {
   let z = 0;
 
   let tilt = 90;
-
-  const cmdVel = new ROSLIB.Topic({
-    ros : ros,
-    name : topic,
-    messageType : 'geometry_msgs/Twist'
-  });
-
-  const tiltPub = new ROSLIB.Topic({
-    ros : ros,
-    name : tiltTopic,
-    messageType : 'std_msgs/UInt16'
-  });
 
   let oldButtons = null;
 
@@ -99,7 +88,7 @@ GAMEPADTELEOP.Teleop = function(options) {
     tilt = Math.round(tilt); // uint16 in message
 
     // publish the command
-    var twist = new ROSLIB.Message({
+    var twist = {
       angular : {
         x : 0,
         y : 0,
@@ -110,12 +99,12 @@ GAMEPADTELEOP.Teleop = function(options) {
         y : 0,
         z : 0
       }
-    });
+    };
 
     // only publish if moving or changing to zero from non-zero
     // prevents teleop from blocking motion on /navi with constant publishing
     if((oldX !== x) || (oldZ !== z) || (z !== 0) || (x !== 0)) {
-      cmdVel.publish(twist);
+      rosClient.topic.publish(topic, 'geometry_msgs/Twist', twist);
     }
     // check for changes
     if (oldX !== x || oldZ !== z) {
@@ -123,7 +112,7 @@ GAMEPADTELEOP.Teleop = function(options) {
     }
     if (oldTilt !== tilt) {
       that.emit('changeTilt', tilt);
-      tiltPub.publish(new ROSLIB.Message({'data': tilt}));
+      rosClient.topic.publish(tiltTopic, 'std_msgs/UInt16', {'data': tilt});
     }
   };
 

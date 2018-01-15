@@ -1,0 +1,1 @@
+../node_modules/roslibjs-client/build/roslibjs-client.js

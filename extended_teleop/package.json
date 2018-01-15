@@ -24,7 +24,8 @@
   "dependencies": {
     "base64-arraybuffer": "^0.1.5",
     "eventemitter2": "^4.1.0",
-    "roslib": "https://github.com/RobotWebTools/roslibjs.git"
+    "roslib": "https://github.com/RobotWebTools/roslibjs.git",
+    "roslibjs-client": "https://github.com/milvusrobotics/roslibjs-client.git"
   },
   "devDependencies": {
     "webpack": "^2.6.1"

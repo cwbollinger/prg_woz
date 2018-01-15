@@ -1,0 +1,179 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ResolutionBot Teleop Control</title>
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css"/>
+    <link rel="stylesheet" href="./cmd.css"/>
+    <style>
+    table select {
+      margin: 0;
+    }
+    </style>
+    <!-- Compressed JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.0.3/adapter.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js"></script>
+    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="./janus.js"></script>
+    <script src="./janusStreaming.js"></script>
+    <script src="./roslib.min.js"></script>
+    <script src="./roslibjs-client.js"></script>
+    <script src="./gamepad_teleop.js"></script>
+    <script src="./speech.js"></script>
+    <script src="./motion.js"></script>
+    <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
+    <script src="./customize.js"></script>
+  </head>
+  <body>
+    <div class="reveal" id="editModal" data-reveal>
+      <h2>Audio Controls</h2>
+      <table id="edit-audio">
+        <thead>
+          <tr>
+            <th>(Title)</th>
+            <th>Category</th>
+            <th>Controller Mapping</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table> 
+      <h2>Motion Controls</h2>
+      <table id="edit-motion">
+        <thead>
+          <tr>
+            <th>(Title)</th>
+            <th>Controller Mapping</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table> 
+      <div>
+      <a id="save-mapping" data-close style="float:left;">Save Changes</a><a id="load-mapping" style="float:right;" data-close>Cancel</a>
+      </div>
+    </div>
+
+    <div class="grid-y grid-frame cell-block-container">
+      <div class="cell cell-block-y medium-7">
+        <div class="grid-x">
+          <div class="cell medium-4">
+            <div class="grid-y grid-frame">
+              <div class="cell shrink">
+                <h4>Motion Controls</h4>
+                <div class="small button-group">
+                  <button type="button" class="button motion-control" id="bump">Bump</button>
+                  <button type="button" class="button motion-control" id="nudge">Nudge</button>
+                  <button type="button" class="button motion-control" id="rotate">Rotate</button>
+                  <button type="button" class="button motion-control" id="shake">Shake</button>
+                </div>
+              </div>
+              <div class="cell shrink">
+                <h4>Audio Controls</h4>
+                <div>Basics</div>
+                <div class="small basic-buttons button-group">
+                  <button type="button" id="say-hello" class="button speech-control">Hello</button>
+                  <button type="button" id="say-great" class="button speech-control">Great</button>
+                  <button type="button" id="say-ok" class="button speech-control">Ok</a>
+                  <button type="button" id="say-goodbye" class="button speech-control">Goodbye</button>
+                </div>
+                <div>Questions</div>
+                <div class="small question-buttons button-group">
+                  <button type="button" id="say-joke" class="button speech-control">Joke</button>
+                  <button type="button" id="say-exercise" class="button speech-control">Exercise</button>
+                  <button type="button" id="say-snack" class="button speech-control">Snack</button>
+                  <button type="button" id="say-sure" class="button speech-control">Sure</button>
+                </div>
+                <div>Facts</div>
+                <div class="small fact-buttons button-group">
+                  <button type="button" id="say-emotional-fact" class="button speech-control">Emotional</button>
+                  <button type="button" id="say-physical-fact" class="button speech-control">Physical</button>
+                  <button type="button" id="say-nutrition-fact" class="button speech-control">Nutritional</button>
+                </div>
+                <div>Guided Orders</div>
+                <div class="small guide-buttons button-group">
+                  <button type="button" id="say-pushups" class="button speech-control">Pushup</button>
+                  <button type="button" id="say-jumping-jacks" class="button speech-control">Jumping</button>
+                </div>
+              </div>
+              <div class="cell shrink">
+                <p><a id="button-edit" data-open="editModal">Edit Controller Mapping</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="cell medium-4 medium-cell-block-y">
+            <div class="grid-y">
+              <div id="remote-feed" class="cell medium-8">
+                <audio id="audio-stream" style="display:hide;" autoplay></audio>
+                <img id="video-display"/>
+              </div>
+              <div class="cell medium-4">
+                <div id="speed-label"></div>
+                <div id="speed-slider"></div>
+              </div>
+            </div>
+          </div>
+          <div id="cmd-div" class="cell medium-4">
+          </div>
+        </div>
+      </div>
+      <div class="cell card auto">
+        <div id="chat-history" style="flex:1;overflow-y:auto;white-space:pre;"/></div>
+        <input id="chat-input" placeholder="Type a Message"></input>
+      </div>
+      <div class="cell shrink">
+        <div class="grid-x">
+          <div class="cell card medium-5">
+            <h5>Session Details</h5>
+            <div class="cell grid-x shrink">
+              <div class="cell shrink">
+                <label for="name" class="text-right">Participant:</label>
+                <label for="session_no" class="text-right">Session:</label>
+              </div>
+              <div class="cell medium-6 cell-block-container">
+                <input id="record-name" name="name" placeholder="Name"/>
+                <input id="record-session" name="session_no" placeholder="Session"/>
+              </div>
+            </div>
+          </div>
+          <div class="cell card medium-2">
+            <button type="button" id="record-ctrl" class="success button">Start Recording</button>
+          </div>
+          <div class="cell card medium-5">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(document).foundation();
+      //cmd.init({container:'cmd-div', sandbox:false});
+      $(document).ready(() => {
+        init();
+        teleop.on('buttonDown', idx => {
+            console.log(`pressed:${idx}`);
+            gamepadButtonHandler(idx);
+        });
+        /*
+        teleop.on('buttonUp', idx => {
+            console.log(`released:${idx}`);
+        });
+        teleop.on('change', twist => {
+            console.log('updated:'+JSON.stringify(twist));
+        });
+        teleop.on('changeTilt', tilt => {
+            console.log('updatedTilt: '+tilt);
+        });
+        */
+      });
+
+    </script>
+
+  </body>
+</html>
