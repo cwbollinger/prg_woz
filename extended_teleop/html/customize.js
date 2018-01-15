@@ -1,5 +1,5 @@
 const CAMERA_TOPIC='/camera/image_raw';
-const CAMERA_QUALITY='7';
+const CAMERA_QUALITY='5';
 
 let teleop = null;
 let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
@@ -266,7 +266,7 @@ function init() {
 
   $('#chat-input').on('keydown', (ev) => {
     if(ev.which === 13) {
-      sendSpeech(this.value);
+      sendSpeech($(this).val());
       $(this).val('');
       return false;
     }
