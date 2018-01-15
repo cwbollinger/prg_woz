@@ -266,8 +266,9 @@ function init() {
 
   $('#chat-input').on('keydown', (ev) => {
     if(ev.which === 13) {
-      sendSpeech($(this).val());
-      $(this).val('');
+      const text = $('#chat-input').val();
+      sendSpeech(text);
+      $('#chat-input').val('');
       return false;
     }
   });
