@@ -94,24 +94,6 @@ function remapButton(buttonName, command, type) {
   updateEditTable();
 }
 
-function sendSpeech(speech_string) {
-  appendChat(speech_string);
-  // sound -3 is "SAY"
-  // command 1 is "PLAY_ONCE"
-  rosClient.topic.publish('/robotsound', 'sound_play/SoundRequest', {
-    sound: -3,
-    command: 1,
-    arg: speech_string,
-    arg2:''
-  });
-}
-
-function triggerSpeech(speechId) {
-  const sayings = SPEECH[speechId];
-  const sentence = sayings[Math.floor(Math.random() * sayings.length)];
-  sendSpeech(sentence);
-}
-
 /**
  * Setup all GUI elements when the page is loaded. 
  */
@@ -190,6 +172,26 @@ function init() {
     history += text+'\n';
     chatHistory.text(history);
     chatHistory.scrollTop(chatHistory[0].scrollHeight);
+  }
+
+
+  function sendSpeech(speech_string) {
+    appendChat(speech_string);
+    // sound -3 is "SAY"
+    // command 1 is "PLAY_ONCE"
+    rosClient.topic.publish('/robotsound', 'sound_play/SoundRequest', {
+      sound: -3,
+      command: 1,
+      volume: 1.0,
+      arg: speech_string,
+      arg2:'voice_kal_diphone'
+    });
+  }
+  
+  function triggerSpeech(speechId) {
+    const sayings = SPEECH[speechId];
+    const sentence = sayings[Math.floor(Math.random() * sayings.length)];
+    sendSpeech(sentence);
   }
 
   let recording = false;
