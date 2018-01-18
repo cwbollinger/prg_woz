@@ -22,7 +22,12 @@ const SPEECH = {
         "What's the difference between a poorly dressed man on a unicycle and a well dressed man on a bicycle?... Attire!",
         "A man walks into a bar and sees his friend sitting beside a 12-inch pianist. He says to his friend, 'That's amazing. How did you get that?' The man pulls out a bottle and tells him to rub it and make a wish. He rubs the bottle, and a puff of smoke pops out and tells him that he can have one wish. So the man thinks and says, 'I wish I had a million bucks.'...The genie says, 'OK, go outside, and your wish will be granted.'...The man goes outside, but all he finds are ducks filling the sky and roads. He goes back in and tells his friend what happend, and his friend replies, 'I know. Did you really think I wanted a 12-inch pianist?'"
     ],
-    "say-exercise": ["Stub for Exercise Phrasing"],
+    "say-exercise": [
+        "It's time for some exercise!",
+        "Get ready to do some exercise",
+        "Let's get up and moving!",
+        "Exercise is an important part of overall health!"
+    ],
     "say-snack": ["Snack words go here"],
     "say-sure": ["Are you sure?"],
     "say-emotional-fact": [
@@ -54,7 +59,6 @@ const SPEECH = {
         "Breathing deeply in moments of stress, or anytime during the day, brings many benefits such as better circulation, decreased anxiety and reduced blood pressure."
     ],
     "say-physical-fact": [
-        "Working out is hard",
         "Lack of exercise causes nearly as many deaths as smoking.",
         "Sitting for more than three hours a day can cut two years off a person's life expectancy.",
         "Exercise, like walking, can reduce breast cancer risk by 25%.",
