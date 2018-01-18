@@ -1,9 +1,16 @@
 // Constants for Speech and Motion
 const SPEECH = {
-    "say-hello": ["Hi There!"],
+    "say-hello": [
+        "Hi There!",
+        "Hello!",
+        "Greetings",
+    ],
     "say-great": ["Great!"],
-    "say-ok": ["OK, Sounds Good!"],
-    "say-goodbye": ["Goodbye, Have a nice day!"],
+    "say-ok": ["OK,   Sounds Good!"],
+    "say-goodbye": [
+        "Goodbye, Have a nice day!"
+        "Nice talking with you.",
+    ],
     "say-joke": [
         "A vegan said, 'People who sell meat are gross.' ... I said, 'People who sell vegetables are grocer.'",
         "What is green and smells like red paint? ... Green Paint.",
@@ -23,7 +30,7 @@ const SPEECH = {
         "A man walks into a bar and sees his friend sitting beside a 12-inch pianist. He says to his friend, 'That's amazing. How did you get that?' The man pulls out a bottle and tells him to rub it and make a wish. He rubs the bottle, and a puff of smoke pops out and tells him that he can have one wish. So the man thinks and says, 'I wish I had a million bucks.'...The genie says, 'OK, go outside, and your wish will be granted.'...The man goes outside, but all he finds are ducks filling the sky and roads. He goes back in and tells his friend what happend, and his friend replies, 'I know. Did you really think I wanted a 12-inch pianist?'"
     ],
     "say-exercise": ["Stub for Exercise Phrasing"],
-    "say-snack": ["Snack words go here"],
+    "say-snack": ["Would you like a healthy snack option?"],
     "say-sure": ["Are you sure?"],
     "say-emotional-fact": [
         "Laughing 100 times is equivalent to 15 minutes of exercise on a stationary bicycle.",
@@ -123,6 +130,8 @@ const SPEECH = {
         "A lack of water can cause a range of problems, such as constipation, asthma, allergy and migraines.",
         "Your muscles and joints require water in order to stay energized, lubricated and healthy."
     ],
-    "say-pushups": ["Now it's time for some pushups!"],
-    "say-jumping-jacks": ["Jumping jacks are fun, let's do some! Or you can, I don't really have the limbs required..."]
+    "say-pushups": ["Now it's time for some pushups! Tell me when you're ready."],
+    "say-jumping-jacks": ["Jumping jacks are fun, let's do some! Or you can, I don't have the limbs required.   Tell me when you're ready."],
+    "say-squats": ["Let's do some chair squats. Just stand and sit ten times. Tell me when you're ready."],
+    "say-walk": ["Take a quick walk to the end of the building and back."],
 };
