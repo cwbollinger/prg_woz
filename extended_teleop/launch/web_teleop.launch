@@ -1,8 +1,22 @@
 <launch>
   <node pkg="extended_teleop" name="web_teleop_server" type="server_script.py" cwd="node"/>
-  <node pkg="rosbridge_server" name="socket_server" type="rosbridge_websocket"/>
+  <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen">
+    <param name="authenticate" value="false" />
+    <param name="port" value="9090"/>
+    <param name="address" value="0.0.0.0"/>
+    <param name="retry_startup_delay" value="5"/>
+    <param name="fragment_timeout" value="600"/>
+    <param name="delay_between_messages" value="0"/>
+    <param name="max_message_size" value="None"/>
+    
+    <param name="topics_glob" value="[*]"/>
+    <param name="services_glob" value="[*]"/>
+    <param name="params_glob" value="[*]"/>
 
-  <node pkg="web_video_server" name="web_video_server" type="web_video_server"/>
+    <param name="bson_only_mode" value="false"/>
+  </node>
+
+  <node pkg="web_video_server" name="web_video_server" type="web_video_server" output="screen"/>
 
   <node pkg="audio_play" name="audio_stream" type="audio_stream"/>
   <node pkg="extended_teleop" name="web_audio_server" type="launch_janus.sh"/>

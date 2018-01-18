@@ -8,7 +8,6 @@
     <!-- Compressed CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css"/>
-    <link rel="stylesheet" href="./cmd.css"/>
     <style>
     table select {
       margin: 0;
@@ -27,7 +26,6 @@
     <script src="./gamepad_teleop.js"></script>
     <script src="./speech.js"></script>
     <script src="./motion.js"></script>
-    <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
     <script src="./customize.js"></script>
   </head>
   <body>
@@ -107,7 +105,7 @@
               </div>
             </div>
           </div>
-          <div class="cell medium-4 medium-cell-block-y">
+          <div class="cell medium-4">
             <div class="grid-y">
               <div id="remote-feed" class="cell medium-8">
                 <audio id="audio-stream" style="display:hide;" autoplay></audio>
@@ -153,7 +151,6 @@
 
     <script>
       $(document).foundation();
-      //cmd.init({container:'cmd-div', sandbox:false});
       $(document).ready(() => {
         init();
         teleop.on('buttonDown', idx => {
