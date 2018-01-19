@@ -1,17 +1,20 @@
 // Constants for Speech and Motion
 const SPEECH = {
-    "say-hello": [
+    "say-hello": {category: 'basic', data: [
         "Hi There!",
         "Hello!",
         "Greetings",
-    ],
-    "say-great": ["Great!"],
-    "say-ok": ["OK,   Sounds Good!"],
-    "say-goodbye": [
-        "Goodbye, Have a nice day!"
+    ]},
+    "say-great": {category: 'basic', data: ["Great!"]},
+    "say-ok": {category: 'basic', data: [
+        "OK",
+        "Sounds Good!"
+    ]},
+    "say-goodbye": {category: 'basic', data: [
+        "Goodbye, Have a nice day!",
         "Nice talking with you.",
-    ],
-    "say-joke": [
+    ]},
+    "say-joke": {category: 'question', data: [
         "A vegan said, 'People who sell meat are gross.' ... I said, 'People who sell vegetables are grocer.'",
         "What is green and smells like red paint? ... Green Paint.",
         "What is green and has wheels? ... Grass. I lied about the wheels.", 
@@ -28,11 +31,16 @@ const SPEECH = {
         "The difference between a cat and a complex sentence is that a cat has claws at the end of its paws and a complex sentence has a pause at the end of its clause.",
         "What's the difference between a poorly dressed man on a unicycle and a well dressed man on a bicycle?... Attire!",
         "A man walks into a bar and sees his friend sitting beside a 12-inch pianist. He says to his friend, 'That's amazing. How did you get that?' The man pulls out a bottle and tells him to rub it and make a wish. He rubs the bottle, and a puff of smoke pops out and tells him that he can have one wish. So the man thinks and says, 'I wish I had a million bucks.'...The genie says, 'OK, go outside, and your wish will be granted.'...The man goes outside, but all he finds are ducks filling the sky and roads. He goes back in and tells his friend what happend, and his friend replies, 'I know. Did you really think I wanted a 12-inch pianist?'"
-    ],
-    "say-exercise": ["Stub for Exercise Phrasing"],
-    "say-snack": ["Would you like a healthy snack option?"],
-    "say-sure": ["Are you sure?"],
-    "say-emotional-fact": [
+    ]},
+    "say-exercise": {category: 'question', data: [
+        "It's time for some exercise!",
+        "Get ready to do some exercise",
+        "Let's get up and moving!",
+        "Exercise is an important part of overall health!"
+    ]},
+    "say-snack": {category: 'question', data: ["Would you like a healthy snack option?"]},
+    "say-sure": {category: 'question', data: ["Are you sure?"]},
+    "say-emotional-fact": {category: 'fact', data: [
         "Laughing 100 times is equivalent to 15 minutes of exercise on a stationary bicycle.",
         "Sleeping less than 7 hours each night reduces your life expectancy.",
         "Severe Depression can cause us to biologically age more by increasing the aging process in cells.",
@@ -59,8 +67,8 @@ const SPEECH = {
         "The blue light in phones can mess with your circadian rhythm.",
         "Feeling down? Plan a vacation. Not only will getting away make you feel better, but planning and anticipating the vacation will also give you a happiness boost.",
         "Breathing deeply in moments of stress, or anytime during the day, brings many benefits such as better circulation, decreased anxiety and reduced blood pressure."
-    ],
-    "say-physical-fact": [
+    ]},
+    "say-physical-fact": {category: 'fact', data: [
         "Working out is hard",
         "Lack of exercise causes nearly as many deaths as smoking.",
         "Sitting for more than three hours a day can cut two years off a person's life expectancy.",
@@ -92,8 +100,8 @@ const SPEECH = {
         "To maintain a healthy body, you should work out 150 minutes a week",
         "Exercise improves mood.",
         "Exercise promotes healthier sleep habits"
-    ],
-    "say-nutrition-fact": [
+    ]},
+    "say-nutrition-fact": {category: 'fact', data: [
         "People who regularly eat dinner or breakfast in restaurants double their risk of obesity.",
         "Over 30% of cancer could be prevented by avoiding tobacco and alcohol, having a healthy diet and physical activity.",
         "1 Can of Soda a day increases your chances of getting type 2 diabetes by 22%.",
@@ -129,9 +137,9 @@ const SPEECH = {
         "Hydration is key for a good complexion. Drinking enough water also makes you less prone to wrinkles.",
         "A lack of water can cause a range of problems, such as constipation, asthma, allergy and migraines.",
         "Your muscles and joints require water in order to stay energized, lubricated and healthy."
-    ],
-    "say-pushups": ["Now it's time for some pushups! Tell me when you're ready."],
-    "say-jumping-jacks": ["Jumping jacks are fun, let's do some! Or you can, I don't have the limbs required.   Tell me when you're ready."],
-    "say-squats": ["Let's do some chair squats. Just stand and sit ten times. Tell me when you're ready."],
-    "say-walk": ["Take a quick walk to the end of the building and back."],
+    ]},
+    "say-pushups": {category: 'guide', data: ["Now it's time for some pushups! Tell me when you're ready."]},
+    "say-jumping-jacks": {category: 'guide', data: ["Jumping jacks are fun, let's do some! Or you can, I don't have the limbs required.   Tell me when you're ready."]},
+    "say-squats": {category: 'guide', data: ["Let's do some chair squats. Just stand and sit ten times. Tell me when you're ready."]},
+    "say-walk": {category: 'guide', data: ["Take a quick walk to the end of the building and back."]},
 };

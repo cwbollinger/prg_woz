@@ -1,5 +1,5 @@
 const CAMERA_TOPIC='/camera/image_raw';
-const CAMERA_QUALITY='5';
+const CAMERA_QUALITY='100';
 
 let teleop = null;
 let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
@@ -94,10 +94,27 @@ function remapButton(buttonName, command, type) {
   updateEditTable();
 }
 
+function setupButtons(type, category) {
+  console.log('setting up '+type+' buttons for '+category);
+  // category: basic/question/fact/guide
+  const group = $('.'+category+'-buttons')[0];
+  // type: motion/speech/miscellaneous
+  for(command in window[type.toUpperCase()]) {
+    // command = say-x
+    const text = '<button type="button" id="'+command+'" class="button '+type+'-control">'+command+'</button>';
+    $(group).last().append(text);
+  }
+}
+
 /**
  * Setup all GUI elements when the page is loaded. 
  */
 function init() {
+  setupButtons('motion', 'motion');
+  setupButtons('speech', 'basic');
+  setupButtons('speech', 'question');
+  setupButtons('speech', 'fact');
+  setupButtons('speech', 'guide');
 
   // Setup audio control
   const audioCtrl = $('#audio-ctrl');
@@ -140,6 +157,27 @@ function init() {
   // Connecting to ROS.
   let rosClient = new RosClient({
     url : 'ws://'+window.location.hostname+':9090'
+  });
+
+  let redPressed = false;
+  let whitePressed = false;
+  let greenPressed = false;
+  rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', function(message) {
+    let newRedPressed = (1 & message.data) > 0;
+    let newWhitePressed = (2 & message.data) > 0;
+    let newGreenPressed = (4 & message.data) > 0;
+    if(newRedPressed && !redPressed) {
+      appendChat("User Pressed Red Button!");
+    }
+    if(newWhitePressed && !whitePressed) {
+      appendChat("User Pressed White Button!");
+    }
+    if(newGreenPressed && !greenPressed) {
+      appendChat("User Pressed Green Button!");
+    }
+    redPressed = newRedPressed;
+    whitePressed = newWhitePressed;
+    greenPressed = newGreenPressed;
   });
 
   teleop = new GAMEPADTELEOP.Teleop({
@@ -189,7 +227,7 @@ function init() {
   }
   
   function triggerSpeech(speechId) {
-    const sayings = SPEECH[speechId];
+    const sayings = SPEECH[speechId].data;
     const sentence = sayings[Math.floor(Math.random() * sayings.length)];
     sendSpeech(sentence);
   }
@@ -255,7 +293,7 @@ function init() {
 
   function triggerMotion(motionId) {
     appendChat(`'${motionId.toUpperCase()}' Motion Triggered`);
-    const sequence = MOTION[motionId];
+    const sequence = MOTION[motionId].data;
     console.log('sending sequence');
     sendSequence(sequence, null);
   }
