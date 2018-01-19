@@ -71,7 +71,7 @@ GAMEPADTELEOP.Teleop = function(options) {
     speed = throttle * that.scale;
 
     x = -0.5 * axes[1] * speed;
-    z = -2 * axes[2] * speed;
+    z = -5 * axes[2] * speed;
 
     if(axes[3] !== 0){
       tilt -= axes[3] * 3; //TODO: magic numbers need testing
