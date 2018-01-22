@@ -1,5 +1,5 @@
 const CAMERA_TOPIC='/camera/image_raw';
-const CAMERA_QUALITY='100';
+const CAMERA_QUALITY='10';
 
 let teleop = null;
 let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
@@ -195,7 +195,7 @@ function init() {
     value : 60,
     slide : function(e, ui) {
       // Change the speed label.
-      speedLabel.html(`Speed:${ui.value}%`);
+      speedLabel.html(`Linear Speed:${ui.value}%`);
       // Scale the speed.
       teleop.scale = (ui.value / 100.0);
     }
@@ -203,6 +203,25 @@ function init() {
   // Set the initial speed .
   speedLabel.html(`Speed: ${speedSlider.slider('value')}%`);
   teleop.scale = speedSlider.slider('value') / 100.0;
+
+  const rotSpeedSlider = $('#rotation-slider');
+  const rotSpeedLabel = $('#rotation-label');
+  rotSpeedSlider.slider({
+    range : 'min',
+    min : 0,
+    max : 100,
+    value : 60,
+    slide : function(e, ui) {
+      // Change the speed label.
+      rotSpeedLabel.html(`Rotation Speed:${ui.value}%`);
+      // Scale the speed.
+      teleop.rotationScale = (ui.value / 100.0);
+    }
+  });
+  // Set the initial speed .
+  rotSpeedLabel.html(`Speed: ${rotSpeedSlider.slider('value')}%`);
+  teleop.rotationScale = rotSpeedSlider.slider('value') / 100.0;
+
 
   const chatHistory = $('#chat-history');
   function appendChat(text) {

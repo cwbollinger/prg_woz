@@ -34,6 +34,7 @@ GAMEPADTELEOP.Teleop = function(options) {
 
   // used to externally throttle the speed (e.g., from a slider)
   this.scale = 1.0;
+  this.rotationScale = 1.0;
 
   // linear x and y movement and angular z movement
   let x = 0;
@@ -70,8 +71,8 @@ GAMEPADTELEOP.Teleop = function(options) {
     // throttle the speed by the slider and throttle constant
     speed = throttle * that.scale;
 
-    x = -0.5 * axes[1] * speed;
-    z = -5 * axes[2] * speed;
+    x = -0.5 * axes[1] * throttle * that.scale;
+    z = -4 * axes[2] * throttle * that.rotationScale;
 
     if(axes[3] !== 0){
       tilt -= axes[3] * 3; //TODO: magic numbers need testing
