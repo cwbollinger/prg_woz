@@ -1,3 +1,6 @@
+
+import {EventEmitter2} from 'eventemitter2';
+
 /**
  * @author Russell Toris - rctoris@wpi.edu
  */
@@ -138,3 +141,5 @@ GAMEPADTELEOP.Teleop = function(options) {
   });
 };
 GAMEPADTELEOP.Teleop.prototype.__proto__ = EventEmitter2.prototype;
+
+export default GAMEPADTELEOP;

@@ -14,19 +14,13 @@
     }
     </style>
     <!-- Compressed JavaScript -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.0.3/adapter.min.js" ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js"></script>
-    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-    <script src="./janus.js"></script>
-    <script src="./janusStreaming.js"></script>
-    <script src="./roslib.min.js"></script>
-    <script src="./roslibjs-client.js"></script>
-    <script src="./gamepad_teleop.js"></script>
-    <script src="./speech.js"></script>
-    <script src="./motion.js"></script>
-    <script src="./customize.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.0.3/adapter.min.js" ></script>
+    <script src="./js/janus.js"></script>
+    <script src="./js/janusStreaming.js"></script>
+    <script src="./dist/bundle.js"></script>
   </head>
   <body>
     <div class="reveal" id="editModal" data-reveal>
@@ -162,13 +156,13 @@
 
     <script>
       $(document).foundation();
+      /*
       $(document).ready(() => {
         init();
         teleop.on('buttonDown', idx => {
             console.log(`pressed:${idx}`);
             gamepadButtonHandler(idx);
         });
-        /*
         teleop.on('buttonUp', idx => {
             console.log(`released:${idx}`);
         });
@@ -178,8 +172,8 @@
         teleop.on('changeTilt', tilt => {
             console.log('updatedTilt: '+tilt);
         });
-        */
       });
+      */
 
     </script>
 
