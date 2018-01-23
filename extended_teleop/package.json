@@ -5,7 +5,8 @@
   "main": "scripts/audio_server.js",
   "scripts": {
     "test": "node tests/test.js",
-    "build": "./node_modules/.bin/webpack"
+    "build": "./node_modules/.bin/webpack -p",
+    "watch": "./node_modules/.bin/webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -23,11 +24,13 @@
   "homepage": "https://github.com/cwbollinger/prg_woz#readme",
   "dependencies": {
     "base64-arraybuffer": "^0.1.5",
-    "eventemitter2": "^4.1.0",
-    "roslib": "https://github.com/RobotWebTools/roslibjs.git",
-    "roslibjs-client": "https://github.com/milvusrobotics/roslibjs-client.git"
+    "eventemitter2": "^5.0.1",
+    "roslibjs-client": "git+https://github.com/cwbollinger/roslibjs-client.git"
   },
   "devDependencies": {
-    "webpack": "^2.6.1"
+    "babel-core": "~6.26.0",
+    "babel-loader": "~7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "~3.10.0"
   }
 }

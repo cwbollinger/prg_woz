@@ -143,3 +143,4 @@ const SPEECH = {
     "say-squats": {category: 'guide', data: ["Let's do some chair squats. Just stand and sit ten times. Tell me when you're ready."]},
     "say-walk": {category: 'guide', data: ["Take a quick walk to the end of the building and back."]},
 };
+export default SPEECH;

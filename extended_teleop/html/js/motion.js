@@ -61,3 +61,4 @@ const MOTION={
   ]}
 };
 
+export default MOTION;

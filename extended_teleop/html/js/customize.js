@@ -1,3 +1,8 @@
+import SPEECH from './speech.js';
+import MOTION from './motion.js';
+import GAMEPADTELEOP from './gamepad_teleop.js';
+import RosClient from 'roslibjs-client';
+
 const CAMERA_TOPIC='/camera/image_raw';
 const CAMERA_QUALITY='10';
 
@@ -184,6 +189,10 @@ function init() {
     rosClient : rosClient,
     topic : '/cmd_vel_mux/input/teleop'
   });
+  teleop.on('buttonDown', idx => {
+    console.log(`pressed:${idx}`);
+    gamepadButtonHandler(idx);
+  });
 
   // Create a UI slider using JQuery UI.
   const speedSlider = $('#speed-slider');
@@ -351,3 +360,5 @@ function init() {
       }
   }
 }
+
+export default init;
