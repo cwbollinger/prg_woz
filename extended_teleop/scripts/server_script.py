@@ -71,15 +71,14 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         else:
             print self.path
             path = self.path[1:] # strip leading slash
-            if os.path.exists(path) and path.lower().endswith(('.html', '.js', '')):
+            if os.path.exists(path) and path.lower().endswith(('.html', '.js', '.css')):
                 self.send_response(200)
                 if path.lower().endswith('.html'):
                     self.send_header('Content-type', 'text/html')
                 elif path.lower().endswith('.js'):
                     self.send_header('Content-type', 'application/javascript')
-                else: # root
-                    self.send_header('Content-type', 'text/html')
-                    path = 'index.html'
+                elif path.lower().endswith('.css'):
+                    self.send_header('Content-type', 'text/css')
                 self.end_headers()
                 with open(path) as f:
                     self.wfile.write(f.read())

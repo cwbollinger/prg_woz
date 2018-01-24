@@ -232,14 +232,66 @@ function init() {
   teleop.rotationScale = rotSpeedSlider.slider('value') / 100.0;
 
 
-  const chatHistory = $('#chat-history');
-  function appendChat(text) {
-    let history = chatHistory.text();
-    history += text+'\n';
-    chatHistory.text(history);
-    chatHistory.scrollTop(chatHistory[0].scrollHeight);
+  let chatHistory = []
+  let historyPointer = -1;
+  function incrementHistory() {
+    historyPointer += 1;
+    if(historyPointer >= chatHistory.length) {
+      historyPointer -= 1;
+    }
   }
 
+  function decrementHistory() {
+    historyPointer -= 1;
+    if(historyPointer < -1) {
+      historyPointer = -1;
+    }
+  }
+
+  function clearHistory() {
+    historyPointer = -1; // clear
+  }
+
+  function getHistory() {
+    console.log("history: " + historyPointer);
+    if(historyPointer >= 0) {
+      return chatHistory[historyPointer];
+    } else {
+      return "";
+    }
+  }
+
+  const chatHistoryDiv = $('#chat-history');
+  function appendChat(text) {
+    chatHistory.unshift(text);
+    chatHistoryDiv.text(chatHistory.join('\n'));
+    chatHistoryDiv.scrollTop(chatHistory[0].scrollHeight);
+  }
+
+  const chatInput = $('#chat-input');
+  chatInput.on('keydown', (ev) => {
+    if(ev.which === 13) { // enter
+      const text = chatInput.val();
+      sendSpeech(text);
+      clearHistory();
+      chatInput.val(getHistory());
+      chatInput.val(getHistory());
+      return false;
+    } else if (ev.which === 27) { // esc
+      console.log('escape caught');
+      clearHistory();
+      chatInput.val(getHistory());
+      chatInput.val(getHistory());
+    } else if (ev.which === 38) { // up arrow
+      decrementHistory();
+      console.log(getHistory());
+      chatInput.val(getHistory());
+    } else if (ev.which === 40) { // down arrow
+      incrementHistory();
+      console.log(getHistory());
+      chatInput.val(getHistory());
+    }
+  });
 
   function sendSpeech(speech_string) {
     appendChat(speech_string);
@@ -328,15 +380,6 @@ function init() {
 
   motionBtns.click((e) => {
     triggerMotion(e.target.id)
-  });
-
-  $('#chat-input').on('keydown', (ev) => {
-    if(ev.which === 13) {
-      const text = $('#chat-input').val();
-      sendSpeech(text);
-      $('#chat-input').val('');
-      return false;
-    }
   });
 
   gamepadButtonHandler = function(buttonIdx) {

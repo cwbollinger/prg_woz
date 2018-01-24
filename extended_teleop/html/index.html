@@ -6,11 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResolutionBot Teleop Control</title>
     <!-- Compressed CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css"/>
+    <link rel="stylesheet" href="./styles/jquery-ui.css"/>
+    <link rel="stylesheet" href="./styles/foundation.min.css"/>
     <style>
     table select {
       margin: 0;
+    }
+    #chat-input {
+      color: black;
+      background: #3adb76;
+      padding: 5px 3px;
+      line-height: 28px;
+    }
+    #chat-input::placeholder {
+      color: black;
+      opacity: 0.7;
+    }
+    #chat-history {
+      padding: 5px 10px;
     }
     </style>
     <!-- Compressed JavaScript -->
@@ -62,43 +75,43 @@
     <div class="grid-y grid-frame cell-block-container">
       <div class="cell cell-block-y medium-7">
         <div class="grid-x">
-          <div class="cell medium-4">
+          <div class="cell medium-4 grid-padding-x">
             <div class="grid-y grid-frame">
               <div class="cell shrink">
                 <h4>Motion Controls</h4>
                 <div class="small motion-buttons button-group">
-                  <button type="button" class="button motion-control" id="bump">Bump</button>
-                  <button type="button" class="button motion-control" id="nudge">Nudge</button>
-                  <button type="button" class="button motion-control" id="rotate">Rotate</button>
-                  <button type="button" class="button motion-control" id="shake">Shake</button>
+                  <button type="button" class="button large motion-control" id="bump">Bump</button>
+                  <button type="button" class="button large motion-control" id="nudge">Nudge</button>
+                  <button type="button" class="button large motion-control" id="rotate">Rotate</button>
+                  <button type="button" class="button large motion-control" id="shake">Shake</button>
                 </div>
               </div>
               <div class="cell shrink">
                 <h4>Audio Controls</h4>
                 <div>Basics</div>
                 <div class="small basic-buttons button-group">
-                  <button type="button" id="say-hello" class="button speech-control">Hello</button>
-                  <button type="button" id="say-great" class="button speech-control">Great</button>
-                  <button type="button" id="say-ok" class="button speech-control">Ok</a>
-                  <button type="button" id="say-goodbye" class="button speech-control">Goodbye</button>
+                  <button type="button" id="say-hello" class="button large speech-control">Hello</button>
+                  <button type="button" id="say-great" class="button large speech-control">Great</button>
+                  <button type="button" id="say-ok" class="button large speech-control">Ok</a>
+                  <button type="button" id="say-goodbye" class="button large speech-control">Goodbye</button>
                 </div>
                 <div>Questions</div>
                 <div class="small question-buttons button-group">
-                  <button type="button" id="say-joke" class="button speech-control">Joke</button>
-                  <button type="button" id="say-exercise" class="button speech-control">Exercise</button>
-                  <button type="button" id="say-snack" class="button speech-control">Snack</button>
-                  <button type="button" id="say-sure" class="button speech-control">Sure</button>
+                  <button type="button" id="say-joke" class="button large speech-control">Joke</button>
+                  <button type="button" id="say-exercise" class="button large speech-control">Exercise</button>
+                  <button type="button" id="say-snack" class="button large speech-control">Snack</button>
+                  <button type="button" id="say-sure" class="button large speech-control">Sure</button>
                 </div>
                 <div>Facts</div>
                 <div class="small fact-buttons button-group">
-                  <button type="button" id="say-emotional-fact" class="button speech-control">Emotional</button>
-                  <button type="button" id="say-physical-fact" class="button speech-control">Physical</button>
-                  <button type="button" id="say-nutrition-fact" class="button speech-control">Nutritional</button>
+                  <button type="button" id="say-emotional-fact" class="button large speech-control">Emotional</button>
+                  <button type="button" id="say-physical-fact" class="button large speech-control">Physical</button>
+                  <button type="button" id="say-nutrition-fact" class="button large speech-control">Nutritional</button>
                 </div>
                 <div>Guided Orders</div>
                 <div class="small guide-buttons button-group">
-                  <button type="button" id="say-pushups" class="button speech-control">Pushup</button>
-                  <button type="button" id="say-jumping-jacks" class="button speech-control">Jumping</button>
+                  <button type="button" id="say-pushups" class="button large speech-control">Pushup</button>
+                  <button type="button" id="say-jumping-jacks" class="button large speech-control">Jumping</button>
                 </div>
               </div>
               <div class="cell shrink">
@@ -125,8 +138,8 @@
         </div>
       </div>
       <div class="cell card auto">
-        <div id="chat-history" style="flex:1;overflow-y:auto;white-space:pre;"/></div>
         <input id="chat-input" placeholder="Type a Message"></input>
+        <div id="chat-history" style="flex:1;overflow-y:auto;white-space:pre;"/></div>
       </div>
       <div class="cell shrink">
         <div class="grid-x">
