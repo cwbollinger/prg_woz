@@ -1,8 +1,11 @@
-import EventEmitter2 from 'eventemitter2'
-window.EventEmitter2 = EventEmitter2.EventEmitter2
-import SPEECH from './speech.js';
-import MOTION from './motion.js';
-import GAMEPAD_TELEOP from './gamepad_teleop.js';
+import $ from 'jquery';
+window.$ = window.jQuery = $;
+import 'jquery-ui/ui/core';
+import 'jquery-ui/ui/widgets/slider';
+import { Foundation } from 'foundation-sites/js/foundation.core';
+Foundation.addToJquery($);
+import adapter from 'webrtc-adapter';
+window.adapter = adapter;
 import init from './customize.js';
 
 document.addEventListener("DOMContentLoaded", (event) => {

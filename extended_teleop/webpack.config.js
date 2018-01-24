@@ -1,4 +1,6 @@
 const path = require('path');
+const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: './html/js/index.js',
@@ -7,10 +9,20 @@ module.exports = {
     path: path.resolve(__dirname, './html/dist')
   },
   module: {
-    rules: [{
-      test: /\.js$/, // files ending with .js
-      exclude: /node_modules/, // exclude the node_modules directory
-      loader: "babel-loader" // use this (babel-core) loader
-    }]
-  }
+    rules: [
+      {
+        test: /\.js$/, // files ending with .js
+        exclude: /node_modules(?!\/foundation-sites)/,
+        use: "babel-loader" // use this (babel-core) loader
+      }
+    ]
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      '$': 'jquery',
+      'jQuery': 'jquery',
+      'window.jQuery': 'jquery',
+    }),
+    new UglifyJsPlugin()
+  ]
 };
