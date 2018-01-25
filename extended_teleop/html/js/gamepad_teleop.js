@@ -75,10 +75,10 @@ GAMEPADTELEOP.Teleop = function(options) {
     speed = throttle * that.scale;
 
     x = -0.5 * axes[1] * throttle * that.scale;
-    z = -4 * axes[2] * throttle * that.rotationScale;
+    z = -4 * axes[3] * throttle * that.rotationScale;
 
-    if(axes[3] !== 0){
-      tilt -= axes[3] * 3; //TODO: magic numbers need testing
+    if(axes[4] !== 0){
+      tilt -= axes[4] * 3; //TODO: magic numbers need testing
     }
 
     // enforce safety limits

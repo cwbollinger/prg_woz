@@ -1,57 +1,57 @@
 {
     "map": {
-        "12": {
+        "0": {
+            "buttonName": "x",
+            "command": "move",
+            "id": 14,
+            "type": "nudge"
+        },
+        "1": {
             "buttonName": "circle",
             "command": "move",
             "id": 12,
             "type": "bump"
         },
         "13": {
-            "buttonName": "triangle",
-            "command": "move",
-            "id": 13,
-            "type": "rotate"
-        },
-        "14": {
-            "buttonName": "x",
-            "command": "move",
-            "id": 14,
-            "type": "nudge"
-        },
-        "15": {
-            "buttonName": "square",
-            "command": "move",
-            "id": 15,
-            "type": "shake"
-        },
-        "3": {
-            "buttonName": "start",
-            "command": "record",
-            "id": 3
-        },
-        "4": {
             "buttonName": "d-up",
             "command": "speak",
             "id": 4,
             "type": "say-hello"
         },
-        "5": {
-            "buttonName": "d-right",
-            "command": "speak",
-            "id": 5,
-            "type": "say-ok"
-        },
-        "6": {
+        "14": {
             "buttonName": "d-down",
             "command": "speak",
             "id": 6,
             "type": "say-joke"
         },
-        "7": {
+        "15": {
             "buttonName": "d-left",
             "command": "speak",
             "id": 7,
             "type": "say-exercise"
+        },
+        "16": {
+            "buttonName": "d-right",
+            "command": "speak",
+            "id": 5,
+            "type": "say-ok"
+        },
+        "2": {
+            "buttonName": "triangle",
+            "command": "move",
+            "id": 13,
+            "type": "rotate"
+        },
+        "3": {
+            "buttonName": "square",
+            "command": "move",
+            "id": 15,
+            "type": "shake"
+        },
+        "9": {
+            "buttonName": "start",
+            "command": "record",
+            "id": 3
         }
     }
 }
