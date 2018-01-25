@@ -26,7 +26,7 @@ const SPEECH = {
         "It's very risky when you buttt dial somebody and they pick up, because then it's your ass on the line.",
         "I just read a book ent-eye-tild, '50 Things to do Before You Die'... I was suprised that none of them were to 'Shout for help'",
         "Two cannibals are eating a clown. One says to the other, 'Do you think this tastes funny?'",
-        "I told my doctor that I broke my ahrm in two places... He recommended that I stop going to those two places."",
+        "I told my doctor that I broke my ahrm in two places... He recommended that I stop going to those two places.",
         "I should have been sad when my flashlight batteries died... but I was de lighted.",
         "The difference between a cat and a complex sentence is that a cat has claws at the end of its paws and a complex sentence has a pause at the end of its clause.",
         "What's the difference between a pourly dressed man on a unicycle and a well dressed man on a bicycle?... A tire!",
