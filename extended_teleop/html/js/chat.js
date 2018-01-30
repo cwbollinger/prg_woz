@@ -12,16 +12,16 @@ class ChatHistory {
         if(text != '') { // don't waste time if there's no speech
           this.addText(text);
           this.clearHistoryPointer();
-          chatInput.value = this.getHistory();
+          this.inputElement.value = this.getHistory();
         }
         return false;
       } else if (ev.which === 27) { // esc
         this.clearHistoryPointer();
-        this.chatInput.value = this.getHistory();
+        this.inputElement.value = this.getHistory();
         return false;
       } else if (ev.which === 38) { // up arrow
         this.decrementHistoryPointer();
-        this.chatInput.value = this.getHistory();
+        this.inputElement.value = this.getHistory();
         return false;
       } else if (ev.which === 40) { // down arrow
         this.incrementHistoryPointer();
@@ -50,7 +50,7 @@ class ChatHistory {
   }
 
   getHistory() {
-    console.log("history: " + historyPointer);
+    console.log("history: " + this.historyPointer);
     let retval = ""
     if(this.historyPointer >= 0) {
       retval = this.chatHistory[this.historyPointer];
@@ -61,8 +61,8 @@ class ChatHistory {
 
   addText(text) {
     this.chatHistory.unshift(text);
-    this.historyElement.text(this.chatHistory.join('\n'));
-    this.historyElement.scrollTop(this.chatHistory[0].scrollHeight);
+    this.historyElement.innerHTML = this.chatHistory.join('\n');
+    //this.historyElement.scrollTop(this.chatHistory[0].scrollHeight);
   }
 
 }

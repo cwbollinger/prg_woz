@@ -158,7 +158,7 @@ export function init() {
   const chatHistory = new ChatHistory(chatInput, chatHistoryDiv);
 
   chatInput.addEventListener('keydown', (ev) => {
-    const text = this.inputElement.value;
+    const text = chatInput.value;
     if(ev.which === 13) { // enter
       if(text != '') { // don't waste time if there's no speech
         sendSpeech(text);
