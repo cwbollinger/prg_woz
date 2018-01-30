@@ -2,6 +2,7 @@ import SPEECH from './speech.js';
 import MOTION from './motion.js';
 import GAMEPADTELEOP from './gamepad_teleop.js';
 import RosClient from 'roslibjs-client';
+import ChatHistory from './chat.js'
 
 const CAMERA_TOPIC='/camera/image_raw';
 const CAMERA_QUALITY='10';
@@ -11,7 +12,7 @@ let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
 
 let BUTTON_ACTIONS = null;
 
-function saveButtonActions() {
+export function saveButtonActions() {
   console.log('saving the controller mapping');
   $.ajax({
     type: "post",
@@ -28,7 +29,7 @@ function saveButtonActions() {
   });
 }
 
-function loadButtonActions() {
+export function loadButtonActions() {
   console.log('loading the controller mapping');
   $.get("/api/v1/mapping/map", function(data) {
     console.log(data);
@@ -67,7 +68,7 @@ function updateTable(tableId, tableCommand, commandVar) {
   }
 }
 
-function updateEditTable() {
+export function updateEditTable() {
     updateTable('edit-audio', 'speak', SPEECH);
     updateTable('edit-motion', 'move', MOTION);
 }
@@ -111,35 +112,72 @@ function setupButtons(type, category) {
   }
 }
 
+let rosClient = null;
+
+function sendSpeech(speech_string) {
+  rosClient.topic.publish('/web_audio', 'std_msgs/String', {data: speech_string});
+}
+
+function triggerSpeech(speechId) {
+  const sayings = SPEECH[speechId].data;
+  const sentence = sayings[Math.floor(Math.random() * sayings.length)];
+  sendSpeech(sentence);
+}
+
+let recording = false;
+function start_recording(filename) {
+  recording = true;
+  rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:start`});
+}
+
+function stop_recording(filename) {
+  recording = false;
+  rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:stop`});
+}
+
 /**
  * Setup all GUI elements when the page is loaded. 
  */
-function init() {
+export function init() {
+
+  // Connecting to ROS.
+  rosClient = new RosClient({
+    url : 'ws://'+window.location.hostname+':9090'
+  });
+
+  /*
   setupButtons('motion', 'motion');
   setupButtons('speech', 'basic');
   setupButtons('speech', 'question');
   setupButtons('speech', 'fact');
   setupButtons('speech', 'guide');
+  */
 
-  // Setup audio control
-  const audioCtrl = $('#audio-ctrl');
-  audioCtrl.attr('src', 'http://'+window.location.hostname+':8001');
-  audioCtrl.attr('type', 'audio/mp3');
+  const chatInput = document.getElementById('chat-input');
+  const chatHistoryDiv = document.getElementById('chat-history');
+  const chatHistory = new ChatHistory(chatInput, chatHistoryDiv);
 
-  $('#button-edit').click(()=>{
-    updateEditTable();
+  chatInput.addEventListener('keydown', (ev) => {
+    const text = this.inputElement.value;
+    if(ev.which === 13) { // enter
+      if(text != '') { // don't waste time if there's no speech
+        sendSpeech(text);
+      }
+      return false;
+    }
   });
 
-  $('#save-mapping').click(()=>{
-    saveButtonActions();
-  });
+  // Setup video stream
+  document.getElementById('video-display').setAttribute('src', 'http://'+window.location.hostname+':8080/stream?topic='+CAMERA_TOPIC+'&quality='+CAMERA_QUALITY);
 
-  $('#load-mapping').click(()=>{
-    loadButtonActions();
-  });
+  /*
+  // Setup audio control, pre WebRTC implementation
+  const audioElement = document.getElementById('audio-stream');
+  audioElement.setAttribute('src', 'http://'+window.location.hostname+':8001');
+  audioElement.setAttribute('type', 'audio/mp3');
+  */
 
-
-  $('#edit-audio').on('change', '.edit-audio-select', function(e) {
+  $('#edit-audio').on('change', '.edit-audio-select', (e) => {
     const boundBtnName = e.target.value;
     const target = $(e.target);
     const commandType = target.parents('tr').children()[0].childNodes[0]['data']; 
@@ -147,7 +185,7 @@ function init() {
     remapButton(boundBtnName, 'speak', commandType);
   });
 
-  $('#edit-motion').on('change', '.edit-motion-select', function(e) {
+  $('#edit-motion').on('change', '.edit-motion-select', (e) => {
     const boundBtnName = e.target.value;
     const target = $(e.target);
     const commandType = target.parents('tr').children()[0].childNodes[0]['data']; 
@@ -155,30 +193,21 @@ function init() {
     remapButton(boundBtnName, 'move', commandType);
   });
 
-  // Setup video stream
-  $('#video-display').attr('src', 'http://'+window.location.hostname+':8080/stream?topic='+CAMERA_TOPIC+'&quality='+CAMERA_QUALITY);
-
-
-  // Connecting to ROS.
-  let rosClient = new RosClient({
-    url : 'ws://'+window.location.hostname+':9090'
-  });
-
   let redPressed = false;
   let whitePressed = false;
   let greenPressed = false;
-  rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', function(message) {
+  rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', (message) => {
     let newRedPressed = (1 & message.data) > 0;
     let newWhitePressed = (2 & message.data) > 0;
     let newGreenPressed = (4 & message.data) > 0;
     if(newRedPressed && !redPressed) {
-      appendChat("User Pressed Red Button!");
+      chatHistory.addText("User Pressed Red Button!");
     }
     if(newWhitePressed && !whitePressed) {
-      appendChat("User Pressed White Button!");
+      chatHistory.addText("User Pressed White Button!");
     }
     if(newGreenPressed && !greenPressed) {
-      appendChat("User Pressed Green Button!");
+      chatHistory.addText("User Pressed Green Button!");
     }
     redPressed = newRedPressed;
     whitePressed = newWhitePressed;
@@ -189,6 +218,7 @@ function init() {
     rosClient : rosClient,
     topic : '/cmd_vel_mux/input/teleop'
   });
+
   teleop.on('buttonDown', idx => {
     console.log(`pressed:${idx}`);
     gamepadButtonHandler(idx);
@@ -202,7 +232,7 @@ function init() {
     min : 0,
     max : 100,
     value : 60,
-    slide : function(e, ui) {
+    slide : (e, ui) => {
       // Change the speed label.
       speedLabel.html(`Linear Speed:${ui.value}%`);
       // Scale the speed.
@@ -220,7 +250,7 @@ function init() {
     min : 0,
     max : 100,
     value : 60,
-    slide : function(e, ui) {
+    slide : (e, ui) => {
       // Change the speed label.
       rotSpeedLabel.html(`Rotation Speed:${ui.value}%`);
       // Scale the speed.
@@ -231,98 +261,6 @@ function init() {
   rotSpeedLabel.html(`Speed: ${rotSpeedSlider.slider('value')}%`);
   teleop.rotationScale = rotSpeedSlider.slider('value') / 100.0;
 
-
-  let chatHistory = []
-  let historyPointer = -1;
-  function incrementHistory() {
-    historyPointer += 1;
-    if(historyPointer >= chatHistory.length) {
-      historyPointer -= 1;
-    }
-  }
-
-  function decrementHistory() {
-    historyPointer -= 1;
-    if(historyPointer < -1) {
-      historyPointer = -1;
-    }
-  }
-
-  function clearHistory() {
-    historyPointer = -1; // clear
-  }
-
-  function getHistory() {
-    console.log("history: " + historyPointer);
-    if(historyPointer >= 0) {
-      return chatHistory[historyPointer];
-    } else {
-      return "";
-    }
-  }
-
-  const chatHistoryDiv = $('#chat-history');
-  function appendChat(text) {
-    chatHistory.unshift(text);
-    chatHistoryDiv.text(chatHistory.join('\n'));
-    chatHistoryDiv.scrollTop(chatHistory[0].scrollHeight);
-  }
-
-  const chatInput = $('#chat-input');
-  chatInput.on('keydown', (ev) => {
-    if(ev.which === 13) { // enter
-      const text = chatInput.val();
-      sendSpeech(text);
-      clearHistory();
-      chatInput.val(getHistory());
-      chatInput.val(getHistory());
-      return false;
-    } else if (ev.which === 27) { // esc
-      console.log('escape caught');
-      clearHistory();
-      chatInput.val(getHistory());
-      chatInput.val(getHistory());
-    } else if (ev.which === 38) { // up arrow
-      decrementHistory();
-      console.log(getHistory());
-      chatInput.val(getHistory());
-    } else if (ev.which === 40) { // down arrow
-      incrementHistory();
-      console.log(getHistory());
-      chatInput.val(getHistory());
-    }
-  });
-
-  function sendSpeech(speech_string) {
-    appendChat(speech_string);
-    // sound -3 is "SAY"
-    // command 1 is "PLAY_ONCE"
-    rosClient.topic.publish('/robotsound', 'sound_play/SoundRequest', {
-      sound: -3,
-      command: 1,
-      volume: 1.0,
-      arg: speech_string,
-      arg2:'voice_kal_diphone'
-    });
-  }
-  
-  function triggerSpeech(speechId) {
-    const sayings = SPEECH[speechId].data;
-    const sentence = sayings[Math.floor(Math.random() * sayings.length)];
-    sendSpeech(sentence);
-  }
-
-  let recording = false;
-  function start_recording(filename) {
-    recording = true;
-    rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:start`});
-  }
-
-  function stop_recording(filename) {
-    recording = false;
-    rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:stop`});
-  }
-
   const recordBtn = $('#record-ctrl');
   const recordName = $('#record-name');
   const recordSession = $('#record-session');
@@ -331,7 +269,7 @@ function init() {
     const session = recordSession.val();
     const bagName = `${recName}_${session}.bag`;
     if(recording) {
-      appendChat('SESSION RECORDING ENDED');
+      chatHistory.addText('SESSION RECORDING ENDED');
       stop_recording(bagName);
       recordName.prop('disabled', false);
       recordSession.prop('disabled', false);
@@ -339,7 +277,7 @@ function init() {
       recordBtn.addClass('success');
       recordBtn.removeClass('alert');
     } else {
-      appendChat('SESSION RECORDING STARTED');
+      chatHistory.addText('SESSION RECORDING STARTED');
       recordName.prop('disabled', true);
       recordSession.prop('disabled', true);
       start_recording(bagName);
@@ -372,7 +310,7 @@ function init() {
   }
 
   function triggerMotion(motionId) {
-    appendChat(`'${motionId.toUpperCase()}' Motion Triggered`);
+    chatHistory.addText(`'${motionId.toUpperCase()}' Motion Triggered`);
     const sequence = MOTION[motionId].data;
     console.log('sending sequence');
     sendSequence(sequence, null);
@@ -403,5 +341,3 @@ function init() {
       }
   }
 }
-
-export default init;

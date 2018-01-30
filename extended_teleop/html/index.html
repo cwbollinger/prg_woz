@@ -32,7 +32,7 @@
     <script src="./js/janusStreaming.js"></script>
   </head>
   <body>
-    <div class="reveal" id="editModal" data-reveal>
+    <div class="reveal" id="editModal">
       <h2>Audio Controls</h2>
       <table id="edit-audio">
         <thead>
@@ -68,7 +68,7 @@
         </tbody>
       </table>
       <div>
-      <a id="save-mapping" data-close style="float:left;">Save Changes</a><a id="load-mapping" style="float:right;" data-close>Cancel</a>
+      <a id="save-mapping" style="float:left;">Save Changes</a><a id="load-mapping" style="float:right;">Cancel</a>
       </div>
     </div>
 
@@ -166,7 +166,6 @@
     </div>
 
     <script>
-      $(document).foundation();
       /*
       $(document).ready(() => {
         init();

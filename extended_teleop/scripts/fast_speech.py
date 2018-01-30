@@ -35,7 +35,7 @@ class FastSpeech(object):
     def send_speech(self, message):
         filename = b64encode(message.data, '__')
         if os.path.isfile('./{}.wav'.format(filename)):
-            play_saved_speech(filename)
+            self.play_saved_speech(filename)
         else:
             self.sound_client.voiceSound(message.data);
             self.save_speech(message.data)

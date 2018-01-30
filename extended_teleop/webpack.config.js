@@ -8,6 +8,11 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, './html/dist')
   },
+  resolve: {
+    alias: {
+      jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js')
+    }
+  },
   module: {
     rules: [
       {
@@ -22,7 +27,6 @@ module.exports = {
       '$': 'jquery',
       'jQuery': 'jquery',
       'window.jQuery': 'jquery',
-    }),
-    new UglifyJsPlugin()
+    })
   ]
 };
