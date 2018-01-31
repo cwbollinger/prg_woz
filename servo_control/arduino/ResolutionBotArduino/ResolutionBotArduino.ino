@@ -36,7 +36,6 @@ const int buttonPin2 = 2;
 int buttonState0 = 0;         // variable for reading the pushbutton status
 int buttonState1 = 0;
 int buttonState2 = 0;
-uint8_t button=0;
 
 void servo_cb( const std_msgs::UInt16& cmd_msg){
   servo.write(cmd_msg.data); //set servo angle, should be from 0-180  
@@ -65,8 +64,7 @@ void setup(){
 }
 
 void loop(){
-  button = button_press();
-  pushed_msg.data = button;
+  pushed_msg.data = button_press();
   pub_button.publish(&pushed_msg);
   nh.spinOnce();
   delay(200);
