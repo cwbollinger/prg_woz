@@ -169,39 +169,35 @@
           </div>
         </div>
       </div>
-      <div class="cell card auto">
+      <div class="cell auto">
         <div class="grid-x">
-          <div class="cell card medium-6">
+          <div class="cell card medium-4">
             <input id="chat-input" placeholder="Type a Message"></input>
             <div id="chat-history" style="flex:1;overflow-y:auto;white-space:pre;"/></div>
-          </div>
-          <div class="cell card shrink">
-            <div class="sphere red"></div>
-            <div class="sphere yellow"></div>
-            <div class="sphere green"></div>
           </div>
         </div>
       </div>
       <div class="cell shrink">
         <div class="grid-x">
-          <div class="cell card medium-5">
+          <div class="cell card medium-4">
             <h5>Session Details</h5>
             <div class="cell grid-x shrink">
               <div class="cell shrink">
                 <label for="name" class="text-right">Participant:</label>
                 <label for="session_no" class="text-right">Session:</label>
               </div>
-              <div class="cell medium-6 cell-block-container">
+              <div class="cell medium-5 cell-block-container">
                 <input id="record-name" name="name" placeholder="Name"/>
                 <input id="record-session" name="session_no" placeholder="Session"/>
               </div>
             </div>
           </div>
-          <div class="cell card medium-2">
+          <div class="cell card shrink">
             <button type="button" id="record-ctrl" class="success button">Start Recording</button>
           </div>
-          <div class="cell card medium-5">
-          </div>
+          <div id="red-btn-indicator" class="cell sphere red auto"></div>
+          <div id="yellow-btn-indicator" class="cell sphere yellow auto"></div>
+          <div id="green-btn-indicator" class="cell sphere green auto"></div>
         </div>
       </div>
     </div>

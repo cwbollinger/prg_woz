@@ -196,10 +196,19 @@ export function init() {
   let redPressed = false;
   let whitePressed = false;
   let greenPressed = false;
+  const redIndicator = document.getElementById('red-btn-indicator');
+  const yellowIndicator = document.getElementById('yellow-btn-indicator');
+  const greenIndicator = document.getElementById('green-btn-indicator');
   rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', (message) => {
+    console.log(`new button msg received: ${message.data}`);
     let newRedPressed = (1 & message.data) > 0;
     let newWhitePressed = (2 & message.data) > 0;
     let newGreenPressed = (4 & message.data) > 0;
+
+    redIndicator.style.backgroundColor = newRedPressed ? 'red' : 'maroon';
+    yellowIndicator.style.backgroundColor = newWhitePressed ? 'yellow' : 'olive';
+    greenIndicator.style.backgroundColor = newGreenPressed ? 'lime' : 'green';
+
     if(newRedPressed && !redPressed) {
       chatHistory.addText("User Pressed Red Button!");
     }
