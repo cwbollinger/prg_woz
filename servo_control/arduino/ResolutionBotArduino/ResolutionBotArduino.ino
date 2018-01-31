@@ -36,8 +36,7 @@ const int buttonPin2 = 2;
 int buttonState0 = 0;         // variable for reading the pushbutton status
 int buttonState1 = 0;
 int buttonState2 = 0;
-int button=0;
-int old_button=button;
+uint8_t button=0;
 
 void servo_cb( const std_msgs::UInt16& cmd_msg){
   servo.write(cmd_msg.data); //set servo angle, should be from 0-180  
@@ -48,20 +47,8 @@ int button_press(){
   buttonState0 = digitalRead(buttonPin0);
   buttonState1 = digitalRead(buttonPin1);
   buttonState2 = digitalRead(buttonPin2);
-  if (buttonState0 == HIGH) {
-    delay(200);
-    return 0;
-  }
-  else if (buttonState1 == HIGH) {
-    delay(200);
-    return 1;
-  }
-  else if (buttonState2 == HIGH) {
-    delay(200);
-    return 2;   
-  }
-  else return -1;
-  }
+  return (buttonState2 << 2) | (buttonState1 << 1) | buttonState0;
+}
 
 ros::Subscriber<std_msgs::UInt16> sub("servo", servo_cb);
 
@@ -78,13 +65,10 @@ void setup(){
 }
 
 void loop(){
-  pushed_msg.data=button_press();
-  
-  if (pushed_msg.data!=-1){
+  button = button_press();
+  pushed_msg.data = button;
   pub_button.publish(&pushed_msg);
-  }
-  pushed_msg.data=-1;
   nh.spinOnce();
-  delay(1);
+  delay(200);
 }
 
