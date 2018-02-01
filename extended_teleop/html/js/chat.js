@@ -13,6 +13,7 @@ class ChatHistory {
           this.addText(text);
           this.clearHistoryPointer();
           this.inputElement.value = this.getHistory();
+          this.onEnterCallback(text);
         }
         return false;
       } else if (ev.which === 27) { // esc

@@ -115,6 +115,7 @@ function setupButtons(type, category) {
 let rosClient = null;
 
 function sendSpeech(speech_string) {
+  console.log('sending audio to robot');
   rosClient.topic.publish('/web_audio', 'std_msgs/String', {data: speech_string});
 }
 
@@ -156,16 +157,7 @@ export function init() {
   const chatInput = document.getElementById('chat-input');
   const chatHistoryDiv = document.getElementById('chat-history');
   const chatHistory = new ChatHistory(chatInput, chatHistoryDiv);
-
-  chatInput.addEventListener('keydown', (ev) => {
-    const text = chatInput.value;
-    if(ev.which === 13) { // enter
-      if(text != '') { // don't waste time if there's no speech
-        sendSpeech(text);
-      }
-      return false;
-    }
-  });
+  chatHistory.onEnterCallback = sendSpeech;
 
   // Setup video stream
   document.getElementById('video-display').setAttribute('src', 'http://'+window.location.hostname+':8080/stream?topic='+CAMERA_TOPIC+'&quality='+CAMERA_QUALITY);
@@ -200,7 +192,6 @@ export function init() {
   const yellowIndicator = document.getElementById('yellow-btn-indicator');
   const greenIndicator = document.getElementById('green-btn-indicator');
   rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', (message) => {
-    console.log(`new button msg received: ${message.data}`);
     let newRedPressed = (1 & message.data) > 0;
     let newWhitePressed = (2 & message.data) > 0;
     let newGreenPressed = (4 & message.data) > 0;
