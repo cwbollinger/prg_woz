@@ -67,6 +67,6 @@ void loop(){
   pushed_msg.data = button_press();
   pub_button.publish(&pushed_msg);
   nh.spinOnce();
-  delay(200);
+  delay(20);
 }
 
