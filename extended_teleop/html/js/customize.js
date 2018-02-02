@@ -2,7 +2,12 @@ import SPEECH from './speech.js';
 import MOTION from './motion.js';
 import GAMEPADTELEOP from './gamepad_teleop.js';
 import RosClient from 'roslibjs-client';
-import ChatHistory from './chat.js'
+import { ChatHistory } from './chat.js'
+import { ButtonIndicator } from './buttons.js'
+
+// attach these to the global namespace so we can get them by name (weird but works)
+window.SPEECH = SPEECH;
+window.MOTION = MOTION;
 
 const CAMERA_TOPIC='/camera/image_raw';
 const CAMERA_QUALITY='10';
@@ -47,7 +52,7 @@ function updateTable(tableId, tableCommand, commandVar) {
       btnMap[btn.type] = btn.buttonName;
     }
   }
-  let table = $('#'+tableId);
+  let table = $(`#${tableId}`);
   table.find('tbody').empty();
   for(let key in commandVar) {
     let str = btnMap[key];
@@ -56,15 +61,15 @@ function updateTable(tableId, tableCommand, commandVar) {
       str = 'unmapped';
       selected = 'selected';
     }
-    let selectStr = '<select '+selected+' class="'+tableId+'-select"><option value="unmapped">unmapped</option>';
+    let selectStr = `<select ${selected} class="${tableId}-select"><option value="unmapped">unmapped</option>`;
     for(let id in BUTTON_ACTIONS) {
       const name = BUTTON_ACTIONS[id].buttonName;
       selected = str === name ? 'selected' : '';
-      selectStr += '<option '+selected+' value="'+name+'">'+name+'</option>';
+      selectStr += `<option ${selected} value="${name}">${name}</option>`;
     }
     selectStr += '</select>';
     const todo = threeRows ? '<td>TODO</td>' : '';
-    table.find('tbody:last').append('<tr><td>'+key+'</td>'+todo+'<td>'+selectStr+'</td></tr>')
+    table.find('tbody:last').append(`<tr><td>${key}</td>${todo}<td>${selectStr}</td></tr>`)
   }
 }
 
@@ -101,14 +106,19 @@ function remapButton(buttonName, command, type) {
 }
 
 function setupButtons(type, category) {
-  console.log('setting up '+type+' buttons for '+category);
+  // console.log(`setting up ${type} buttons for ${category}`);
   // category: basic/question/fact/guide
-  const group = $('.'+category+'-buttons')[0];
+  const group = $(`.${category}-buttons`)[0];
+  // console.log(group);
   // type: motion/speech/miscellaneous
-  for(command in window[type.toUpperCase()]) {
+  const commands = window[type.toUpperCase()];
+  for(let command in commands) {
+    // console.log(command);
     // command = say-x
-    const text = '<button type="button" id="'+command+'" class="button '+type+'-control">'+command+'</button>';
-    $(group).last().append(text);
+    if(commands[command].category === category) {
+      const text = `<button type="button" id="${command}" class="button ${type}-control">${commands[command].name}</button>`;
+      $(group).last().append(text);
+    }
   }
 }
 
@@ -143,16 +153,14 @@ export function init() {
 
   // Connecting to ROS.
   rosClient = new RosClient({
-    url : 'ws://'+window.location.hostname+':9090'
+    url : `ws://${window.location.hostname}:9090`
   });
 
-  /*
   setupButtons('motion', 'motion');
   setupButtons('speech', 'basic');
   setupButtons('speech', 'question');
   setupButtons('speech', 'fact');
   setupButtons('speech', 'guide');
-  */
 
   const chatInput = document.getElementById('chat-input');
   const chatHistoryDiv = document.getElementById('chat-history');
@@ -160,12 +168,12 @@ export function init() {
   chatHistory.onEnterCallback = sendSpeech;
 
   // Setup video stream
-  document.getElementById('video-display').setAttribute('src', 'http://'+window.location.hostname+':8080/stream?topic='+CAMERA_TOPIC+'&quality='+CAMERA_QUALITY);
+  document.getElementById('video-display').setAttribute('src', `http://${window.location.hostname}:8080/stream?topic=${CAMERA_TOPIC}&quality=${CAMERA_QUALITY}`);
 
   /*
   // Setup audio control, pre WebRTC implementation
   const audioElement = document.getElementById('audio-stream');
-  audioElement.setAttribute('src', 'http://'+window.location.hostname+':8001');
+  audioElement.setAttribute('src', `http://${window.location.hostname}:8001`);
   audioElement.setAttribute('type', 'audio/mp3');
   */
 
@@ -185,34 +193,10 @@ export function init() {
     remapButton(boundBtnName, 'move', commandType);
   });
 
-  let redPressed = false;
-  let whitePressed = false;
-  let greenPressed = false;
   const redIndicator = document.getElementById('red-btn-indicator');
   const yellowIndicator = document.getElementById('yellow-btn-indicator');
   const greenIndicator = document.getElementById('green-btn-indicator');
-  rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', (message) => {
-    let newRedPressed = (1 & message.data) > 0;
-    let newWhitePressed = (2 & message.data) > 0;
-    let newGreenPressed = (4 & message.data) > 0;
-
-    redIndicator.style.backgroundColor = newRedPressed ? 'red' : 'maroon';
-    yellowIndicator.style.backgroundColor = newWhitePressed ? 'yellow' : 'olive';
-    greenIndicator.style.backgroundColor = newGreenPressed ? 'lime' : 'green';
-
-    if(newRedPressed && !redPressed) {
-      chatHistory.addText("User Pressed Red Button!");
-    }
-    if(newWhitePressed && !whitePressed) {
-      chatHistory.addText("User Pressed White Button!");
-    }
-    if(newGreenPressed && !greenPressed) {
-      chatHistory.addText("User Pressed Green Button!");
-    }
-    redPressed = newRedPressed;
-    whitePressed = newWhitePressed;
-    greenPressed = newGreenPressed;
-  });
+  const buttonIndicator = new ButtonIndicator(rosClient, [redIndicator, yellowIndicator, greenIndicator]);
 
   teleop = new GAMEPADTELEOP.Teleop({
     rosClient : rosClient,
@@ -312,7 +296,7 @@ export function init() {
   function triggerMotion(motionId) {
     chatHistory.addText(`'${motionId.toUpperCase()}' Motion Triggered`);
     const sequence = MOTION[motionId].data;
-    console.log('sending sequence');
+    //console.log('sending sequence');
     sendSequence(sequence, null);
   }
 
@@ -336,7 +320,7 @@ export function init() {
               break;
             default:
               console.log('No valid action assigned to this button');
-              console.log('Button action: '+action.command);
+              console.log(`Button action: ${action.command}`);
           }
       }
   }

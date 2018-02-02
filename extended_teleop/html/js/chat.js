@@ -1,5 +1,5 @@
 
-class ChatHistory {
+export class ChatHistory {
   constructor(inputElement, historyElement) {
     this.inputElement = inputElement;
     this.historyElement = historyElement;
@@ -67,5 +67,3 @@ class ChatHistory {
   }
 
 }
-
-export default ChatHistory;
