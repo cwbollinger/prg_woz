@@ -19,6 +19,8 @@ class FastSpeech(object):
     def __init__(self):
         rospy.init_node('fast_speech')
         self.speech_dir = rospy.get_param('~speech_directory', '/home/blood/speech_files')
+        if not os.path.isdir(self.speech_dir):
+            os.mkdir(self.speech_dir)
         os.chdir(self.speech_dir) # so we can save the files
         self.sound_client = SoundClient()
         listen_topic = rospy.get_param('~text_topic', '/web_audio')
@@ -35,8 +37,10 @@ class FastSpeech(object):
     def send_speech(self, message):
         filename = b64encode(message.data, '__')
         if os.path.isfile('./{}.wav'.format(filename)):
+            print 'file found!'
             self.play_saved_speech(filename)
         else:
+            print 'generating file'
             self.sound_client.voiceSound(message.data);
             self.save_speech(message.data)
 

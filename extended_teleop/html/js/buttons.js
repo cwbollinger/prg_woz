@@ -22,7 +22,9 @@ export class ButtonIndicator {
     this.redPressed = false;
     this.yellowPressed = false;
     this.greenPressed = false;
-    rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', this.buttonMessageCallback);
+    this.rosClient.topic.subscribe('/pushed', 'std_msgs/Int8', (msg) => {
+      this.buttonMessageCallback(msg);
+    });
   }
 
 
@@ -47,6 +49,7 @@ export class ButtonIndicator {
     setTimeout( () => {
       clearInterval(loopTimer);
       this.lightData -= lightValue;
+      this.rosClient.topic.publish('/light', 'std_msgs/Int8', {'data': this.lightData});
     }, duration);
   }
 
@@ -56,17 +59,17 @@ export class ButtonIndicator {
     let newGreenPressed = (4 & message.data) > 0;
 
     this.redIndicator.style.backgroundColor = newRedPressed ? 'red' : 'maroon';
-    this.yellowIndicator.style.backgroundColor = newWhitePressed ? 'yellow' : 'olive';
+    this.yellowIndicator.style.backgroundColor = newYellowPressed ? 'yellow' : 'olive';
     this.greenIndicator.style.backgroundColor = newGreenPressed ? 'lime' : 'green';
 
     if(newRedPressed && !this.redPressed) {
-      chatHistory.addText("User Pressed Red Button!");
+      this.chatHistory.addText("User Pressed Red Button!");
     }
     if(newYellowPressed && !this.yellowPressed) {
-      chatHistory.addText("User Pressed White Button!");
+      this.chatHistory.addText("User Pressed White Button!");
     }
     if(newGreenPressed && !this.greenPressed) {
-      chatHistory.addText("User Pressed Green Button!");
+      this.chatHistory.addText("User Pressed Green Button!");
     }
     this.redPressed = newRedPressed;
     this.yellowPressed = newYellowPressed;

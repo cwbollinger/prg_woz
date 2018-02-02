@@ -197,6 +197,7 @@ export function init() {
   const yellowIndicator = document.getElementById('yellow-btn-indicator');
   const greenIndicator = document.getElementById('green-btn-indicator');
   const buttonIndicator = new ButtonIndicator(rosClient, [redIndicator, yellowIndicator, greenIndicator]);
+  buttonIndicator.chatHistory = chatHistory;
 
   teleop = new GAMEPADTELEOP.Teleop({
     rosClient : rosClient,
