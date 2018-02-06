@@ -57,6 +57,67 @@
       border-radius: 50%;
       transform: rotate(40deg);
     }
+      .light{
+    background-image: -webkit-linear-gradient(top, #f4f1ee, #fff);
+    background-image: linear-gradient(top, #f4f1ee, #fff);
+    border-radius: 50%;
+    box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, .3), inset 0px 4px 1px 1px white, inset 0px -3px 1px 1px rgba(204,198,197,.5);
+    height: 100px;
+    margin: 0 30px 30px 0;
+    width: 100px;      
+    -webkit-transition: all .1s linear;
+    transition: all .1s linear;
+  }
+  .light:after{
+    color:#e9e6e4;
+    content: "";
+    font-size: 30px;
+    height: 30px;
+    text-decoration: none;
+    text-shadow: 0px -1px 1px #bdb5b4, 1px 1px 1px white;
+    width: 30px;
+  }
+  .neutral:after{
+    content: ":|";
+    font-size: 400%;
+    color: #f99e4e;
+  }
+  .satisfied:after{
+    content: ":)";
+    font-size: 400%;
+    color: #83d244;
+  }
+  .unsatisfied:after{
+    content: ":(";
+    font-size: 400%;
+    color: #eb2f2f;
+  }
+  .light:hover{
+    background-image: -webkit-linear-gradient(top, #fff, #f4f1ee);
+    background-image: linear-gradient(top, #fff, #f4f1ee);
+    color:#0088cc;
+  }
+  .neutral:hover:after{
+    color:#f99e4e;
+    text-shadow:0px 0px 6px #f99e4e;
+  }
+  .satisfied:hover:after{
+    color:#83d244;
+    text-shadow:0px 0px 6px #83d244;
+  }
+  .unsatisfied:hover:after{
+    color:#eb2f2f;
+    text-shadow:0px 0px 6px #eb2f2f;
+  }
+  .light:active{
+    background-image: -webkit-linear-gradient(top, #efedec, #f7f4f4);
+    background-image: linear-gradient(top, #efedec, #f7f4f4);
+    box-shadow: 0 3px 5px 0 rgba(0,0,0,.4), inset 0px -3px 1px 1px rgba(204,198,197,.5);
+  }
+  .light:active:after{
+    color:#dbd2d2;
+    text-shadow: 0px -1px 1px #bdb5b4, 0px 1px 1px white;
+  }
     </style>
     <!-- Compressed JavaScript -->
     <script src="./dist/bundle.js"></script>
@@ -174,9 +235,11 @@
           <div class="cell card shrink">
             <button type="button" id="record-ctrl" class="success button">Start Recording</button>
           </div>
-          <div id="red-btn-indicator" class="cell sphere red auto"></div>
-          <div id="yellow-btn-indicator" class="cell sphere yellow auto"></div>
-          <div id="green-btn-indicator" class="cell sphere green auto"></div>
+          <div>
+            <a href="#" class="button light satisfied"></a>
+            <a href="#" class="button light neutral"></a>
+            <a href="#" class="button light unsatisfied"></a>
+          </div>
         </div>
       </div>
     </div>
