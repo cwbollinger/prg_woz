@@ -9,6 +9,52 @@ import { ButtonIndicator } from './buttons.js'
 window.SPEECH = SPEECH;
 window.MOTION = MOTION;
 
+class RecordButton {
+  constructor(btnElem, participantElem, sessionElem) {
+    this.recording = false;
+    this.recordBtn = btnElem;
+    this.recordName = participantElem;
+    this.recordSession = sessionElem;
+    this.recordBtn.click(() => {
+      this.toggleRecord();
+    });
+  }
+
+  start_recording(filename) {
+    this.recording = true;
+    rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:start`});
+  }
+
+  stop_recording(filename) {
+    this.recording = false;
+    rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:stop`});
+  }
+
+  toggleRecord() {
+    const recName = this.recordName.val();
+    const session = this.recordSession.val();
+    const bagName = `${recName}_${session}.bag`;
+    if(this.recording) {
+      this.chatHistory.addText('SESSION RECORDING ENDED');
+      this.stop_recording(bagName);
+      this.recordName.prop('disabled', false);
+      this.recordSession.prop('disabled', false);
+      this.recordBtn.text('Start Recording');
+      this.recordBtn.addClass('success');
+      this.recordBtn.removeClass('alert');
+    } else {
+      this.chatHistory.addText('SESSION RECORDING STARTED');
+      this.recordName.prop('disabled', true);
+      this.recordSession.prop('disabled', true);
+      this.start_recording(bagName);
+      this.recordBtn.text('Stop Recording');
+      this.recordBtn.addClass('alert');
+      this.recordBtn.removeClass('success');
+    }
+  }
+}
+
+
 const CAMERA_TOPIC='/camera/image_raw';
 const CAMERA_QUALITY='10';
 
@@ -17,11 +63,12 @@ let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
 
 let BUTTON_ACTIONS = null;
 
+
 export function saveButtonActions() {
   console.log('saving the controller mapping');
   $.ajax({
     type: "post",
-    url: "/api/v1/mapping/map",
+    url: "/api/v1/map",
     contentType: "application/json; charset=utf-8",
     data: JSON.stringify(BUTTON_ACTIONS),
     success: function(data) {
@@ -36,7 +83,7 @@ export function saveButtonActions() {
 
 export function loadButtonActions() {
   console.log('loading the controller mapping');
-  $.get("/api/v1/mapping/map", function(data) {
+  $.get("/api/v1/map", function(data) {
     console.log(data);
     BUTTON_ACTIONS = data;
   }, "json");
@@ -123,6 +170,34 @@ function setupButtons(type, category) {
 }
 
 let rosClient = null;
+let chatHistory = null;
+
+function saveHistory() {
+  console.log('saving console text');
+  $.ajax({
+    type: "post",
+    url: "/api/v1/history",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(BUTTON_ACTIONS),
+    success: function(data) {
+      console.log("Save Success!");
+    },
+    error: function(error) {
+      console.log("Save Error! Error: ");
+      console.log(error);
+    }
+  });
+}
+
+function loadHistory() {
+  console.log('loading text history');
+  $.get("/api/v1/history", function(data) {
+    console.log(data);
+    chatHistory.setFullHistory(data);
+  }, "json");
+}
+//loadHistory();
+
 
 function sendSpeech(speech_string) {
   console.log('sending audio to robot');
@@ -132,18 +207,8 @@ function sendSpeech(speech_string) {
 function triggerSpeech(speechId) {
   const sayings = SPEECH[speechId].data;
   const sentence = sayings[Math.floor(Math.random() * sayings.length)];
+  chatHistory.addText(sentence);
   sendSpeech(sentence);
-}
-
-let recording = false;
-function start_recording(filename) {
-  recording = true;
-  rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:start`});
-}
-
-function stop_recording(filename) {
-  recording = false;
-  rosClient.topic.publish('/rosbagctrl/named', 'std_msgs/String', {data:`${filename}:stop`});
 }
 
 /**
@@ -157,6 +222,7 @@ export function init() {
   });
 
   setupButtons('motion', 'motion');
+
   setupButtons('speech', 'basic');
   setupButtons('speech', 'question');
   setupButtons('speech', 'fact');
@@ -164,18 +230,14 @@ export function init() {
 
   const chatInput = document.getElementById('chat-input');
   const chatHistoryDiv = document.getElementById('chat-history');
-  const chatHistory = new ChatHistory(chatInput, chatHistoryDiv);
-  chatHistory.onEnterCallback = sendSpeech;
+  chatHistory = new ChatHistory(chatInput, chatHistoryDiv);
+  chatHistory.onEnterCallback = (speech) => {
+    sendSpeech(speech);
+    //saveHistory();
+  };
 
   // Setup video stream
   document.getElementById('video-display').setAttribute('src', `http://${window.location.hostname}:8080/stream?topic=${CAMERA_TOPIC}&quality=${CAMERA_QUALITY}`);
-
-  /*
-  // Setup audio control, pre WebRTC implementation
-  const audioElement = document.getElementById('audio-stream');
-  audioElement.setAttribute('src', `http://${window.location.hostname}:8001`);
-  audioElement.setAttribute('type', 'audio/mp3');
-  */
 
   $('#edit-audio').on('change', '.edit-audio-select', (e) => {
     const boundBtnName = e.target.value;
@@ -249,29 +311,8 @@ export function init() {
   const recordBtn = $('#record-ctrl');
   const recordName = $('#record-name');
   const recordSession = $('#record-session');
-  function toggleRecord() {
-    const recName = recordName.val();
-    const session = recordSession.val();
-    const bagName = `${recName}_${session}.bag`;
-    if(recording) {
-      chatHistory.addText('SESSION RECORDING ENDED');
-      stop_recording(bagName);
-      recordName.prop('disabled', false);
-      recordSession.prop('disabled', false);
-      recordBtn.text('Start Recording');
-      recordBtn.addClass('success');
-      recordBtn.removeClass('alert');
-    } else {
-      chatHistory.addText('SESSION RECORDING STARTED');
-      recordName.prop('disabled', true);
-      recordSession.prop('disabled', true);
-      start_recording(bagName);
-      recordBtn.text('Stop Recording');
-      recordBtn.addClass('alert');
-      recordBtn.removeClass('success');
-    }
-  }
-  recordBtn.click(toggleRecord);
+  const recordButton = new RecordButton(recordBtn, recordName, recordSession);
+  recordButton.chatHistory = chatHistory; // hack for logging
 
   $('.speech-control').click((e) => {
     triggerSpeech(e.target.id)

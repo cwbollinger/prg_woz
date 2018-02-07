@@ -41,8 +41,9 @@ class FastSpeech(object):
             self.play_saved_speech(filename)
         else:
             print 'generating file'
-            self.sound_client.voiceSound(message.data);
+            self.sound_client.say(message.data);
             self.save_speech(message.data)
+
 
 if __name__ == "__main__":
     fs = FastSpeech()

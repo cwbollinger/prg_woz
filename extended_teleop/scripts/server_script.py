@@ -37,7 +37,7 @@ class LocalData(object):
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
-        if re.search('/api/v1/mapping/*', self.path):
+        if re.search('/api/v1/*', self.path):
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             if ctype == 'application/json':
                 length = int(self.headers.getheader('content-length'))
@@ -57,7 +57,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
     def do_GET(self):
-        if re.search('/api/v1/mapping/*', self.path):
+        if re.search('/api/v1/*', self.path):
             recordID = self.path.split('/')[-1]
             if LocalData.has_record(recordID):
                 self.send_response(200)

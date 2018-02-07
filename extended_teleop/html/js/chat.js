@@ -17,6 +17,7 @@ export class ChatHistory {
         }
         return false;
       } else if (ev.which === 27) { // esc
+        ev.preventDefault();
         this.clearHistoryPointer();
         this.inputElement.value = this.getHistory();
         return false;
@@ -48,6 +49,14 @@ export class ChatHistory {
 
   clearHistoryPointer() {
     this.historyPointer = -1; // clear
+  }
+
+  setFullHistory(history) { // only pass array
+    this.chatHistory = history;
+  }
+
+  getFullHistory() {
+    return this.chatHistory;
   }
 
   getHistory() {
