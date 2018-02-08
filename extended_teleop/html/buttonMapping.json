@@ -4,13 +4,13 @@
             "buttonName": "x",
             "command": "move",
             "id": 14,
-            "type": "nudge"
+            "type": "shake"
         },
         "1": {
             "buttonName": "circle",
             "command": "move",
             "id": 12,
-            "type": "bump"
+            "type": "rotate"
         },
         "13": {
             "buttonName": "d-up",
@@ -40,13 +40,13 @@
             "buttonName": "triangle",
             "command": "move",
             "id": 13,
-            "type": "rotate"
+            "type": "nudge"
         },
         "3": {
             "buttonName": "square",
             "command": "move",
             "id": 15,
-            "type": "shake"
+            "type": "bump"
         },
         "9": {
             "buttonName": "start",
