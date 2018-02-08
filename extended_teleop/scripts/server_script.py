@@ -4,135 +4,90 @@ import sys
 import signal
 
 import os
-import re
 import json
-import atexit
 
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-from SocketServer import ThreadingMixIn
-import threading
-import cgi
+import sqlite3
+from flask import Flask, g, send_from_directory, request
 
-class LocalData(object):
-    records = {}
-
-    @staticmethod
-    def update_record(key, value):
-        LocalData.records[key] = value
-
-    @staticmethod
-    def has_record(key):
-        return LocalData.records.has_key(key)
-
-    @staticmethod
-    def save_records(fileName):
-        with open(fileName, 'w') as f:
-            f.write(json.dumps(LocalData.records, sort_keys=True, indent=4, separators=(',', ': ')))
-
-    @staticmethod
-    def load_records(fileName):
-        with open(fileName) as f:
-            LocalData.records = json.loads(f.read())
+app = Flask(__name__, instance_path=os.path.abspath('../html'))
 
 
-class HTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        if re.search('/api/v1/*', self.path):
-            ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-            if ctype == 'application/json':
-                length = int(self.headers.getheader('content-length'))
-                data = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)
-                recordID = self.path.split('/')[-1]
-                print data.keys()[0]
-                LocalData.update_record(recordID, json.loads(data.keys()[0]))
-                print "record %s is added successfully" % recordID
-            else:
-                data = {}
-                self.send_response(200)
-                self.end_headers()
-        else:
-            self.send_response(403)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            return
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
-    def do_GET(self):
-        if re.search('/api/v1/*', self.path):
-            recordID = self.path.split('/')[-1]
-            if LocalData.has_record(recordID):
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps(LocalData.records[recordID]))
-            else:
-                self.send_response(400, 'Bad Request: record does not exist')
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-        else:
-            print self.path
-            path = self.path[1:] # strip leading slash
-            if os.path.exists(path) and path.lower().endswith(('.html', '.js', '.css')):
-                self.send_response(200)
-                if path.lower().endswith('.html'):
-                    self.send_header('Content-type', 'text/html')
-                elif path.lower().endswith('.js'):
-                    self.send_header('Content-type', 'application/javascript')
-                elif path.lower().endswith('.css'):
-                    self.send_header('Content-type', 'text/css')
-                self.end_headers()
-                with open(path) as f:
-                    self.wfile.write(f.read())
-            else:
-                self.send_response(403)
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-            return
 
-class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    allow_reuse_address = True
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+        db.row_factory = dict_factory
+    return db
 
-    def shutdown(self):
-        self.socket.close()
-        HTTPServer.shutdown(self)
 
-class SimpleHttpServer():
-    def __init__(self, ip, port):
-        self.server = ThreadedHTTPServer((ip,port), HTTPRequestHandler)
+def query_db(query, args=(), one=False):
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
 
-    def start(self):
-        self.server_thread = threading.Thread(target=self.server.serve_forever)
-        self.server_thread.daemon = True
-        self.server_thread.start()
 
-    def waitForThread(self):
-        while self.server_thread.isAlive(): # hack to allow signals to propagate
-            self.server_thread.join(5.0)
+def update_db(query, args=()):
+    db = get_db()
+    db.execute(query, args)
+    db.commit()
 
-    def addRecord(self, recordID, jsonEncodedRecord):
-        LocalData.records[recordID] = jsonEncodedRecord
 
-    def stop(self):
-        self.server.shutdown()
-        self.waitForThread()
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+
+@app.route('/api/v1/chatHistory', methods=['GET', 'POST'])
+def chat():
+    if request.method == 'POST':
+        new_text = request.json
+        print new_text
+        update_db("INSERT INTO chatHistory VALUES (datetime('now'), ?) ;", (new_text,) )
+        return ''
+    else:
+        return json.dumps(query_db('select * from chatHistory')[-100:])
+
+@app.route('/api/v1/controllerMapping', methods=['GET'])
+def controller_mapping():
+    result = {}
+    for elem in query_db('select * from controllerMapping'):
+        result[elem['buttonId']] = elem['buttonName']
+    return json.dumps(result)
+
+
+@app.route('/api/v1/actionMapping', methods=['GET', 'POST'])
+def action_mapping():
+    if request.method == 'POST':
+        new_mapping = request.json
+        for button_name in new_mapping.keys():
+            command = new_mapping[button_name]['command']
+            btn_type = new_mapping[button_name]['type']
+            update_db('UPDATE actionMapping SET command = ? , type = ? WHERE buttonName = ? ;', (command, btn_type, button_name))
+        return ''
+    else:
+        result = {}
+        for elem in query_db('select * from actionMapping'):
+            result[elem['buttonName']] = elem
+        return json.dumps(result)
+
+
+@app.route('/', defaults={'path': 'index.html'})
+@app.route('/<path:path>')
+def catch_all(path):
+    return send_from_directory(os.getcwd(), path)
+
 
 if __name__=='__main__':
     os.chdir('../html')
-    if os.path.exists('buttonMapping.json'):
-        LocalData.load_records('buttonMapping.json')
-
-    def exit_func():
-        print 'saving data'
-        LocalData.save_records('buttonMapping.json')
-
-    atexit.register(exit_func)
-
-    def signal_handler(signal, frame):
-        server.stop()
-
-    signal.signal(signal.SIGINT, signal_handler)
-
-    server = SimpleHttpServer('0.0.0.0', 8000)
-    print 'HTTP Server Running...........'
-    server.start()
-    server.waitForThread()
-
+    DATABASE =  'database.db'
+    app.run(debug=True, host="0.0.0.0", port=8000)
