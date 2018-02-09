@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="extended_teleop" name="web_teleop_server" type="new_server_script.py" cwd="node"/>
+  <node pkg="extended_teleop" name="web_teleop_server" type="server_script.py" cwd="node"/>
   <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket">
     <param name="authenticate" value="false" />
     <param name="port" value="9090"/>
