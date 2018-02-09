@@ -1,0 +1,8 @@
+<launch>
+	<node name="arduino" pkg="rosserial_python" type="serial_node.py">
+		<param name="port_name" value="/dev/ttyACM0" />
+	</node>
+	<node name="joy_listen" pkg="servo_control" type="joy_listen.py" />
+	<node name="key_listen" pkg="servo_control" type="key_listen.py" />
+	<node name="joy" pkg="joy" type="joy_node" />
+</launch>

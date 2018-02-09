@@ -6,384 +6,264 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResolutionBot Teleop Control</title>
     <!-- Compressed CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css"/>
-    <link rel="stylesheet" href="./cmd.css"/>
+    <link rel="stylesheet" href="./styles/jquery-ui.css"/>
+    <link rel="stylesheet" href="./styles/foundation.min.css"/>
+    <style>
+    table select {
+      margin: 0;
+    }
+    #chat-input {
+      color: black;
+      background: #3adb76;
+      padding: 5px 3px;
+      line-height: 28px;
+    }
+    #chat-input::placeholder {
+      color: black;
+      opacity: 0.7;
+    }
+    #chat-history {
+      padding: 5px 10px;
+    }
+    .red {
+      background-color: red;
+    }
+    .green {
+      background-color: green;
+    }
+    .yellow {
+      background-color: yellow;
+    }
+    .sphere {
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 500%;
+      position: relative;
+      box-shadow: inset -5px -5px 50px #000, 5px 5px 10px black, inset 0px 0px 5px black;
+      display: inline-block;
+      margin: 5%;
+    }
+    .sphere::after {
+      background-color: rgba(255, 255, 255, 0.3);
+      content: '';
+      height: 45%;
+      width: 12%;
+      position: absolute;
+      top: 4%;
+      left: 15%;
+      border-radius: 50%;
+      transform: rotate(40deg);
+    }
+      .light{
+    background-image: -webkit-linear-gradient(top, #f4f1ee, #fff);
+    background-image: linear-gradient(top, #f4f1ee, #fff);
+    border-radius: 50%;
+    box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, .3), inset 0px 4px 1px 1px white, inset 0px -3px 1px 1px rgba(204,198,197,.5);
+    height: 100px;
+    margin: 0 30px 30px 0;
+    width: 100px;      
+    -webkit-transition: all .1s linear;
+    transition: all .1s linear;
+  }
+  .light:after{
+    color:#e9e6e4;
+    content: "";
+    font-size: 30px;
+    height: 30px;
+    text-decoration: none;
+    text-shadow: 0px -1px 1px #bdb5b4, 1px 1px 1px white;
+    width: 30px;
+  }
+  .neutral:after{
+    content: ":|";
+    font-size: 400%;
+    color: #f99e4e;
+  }
+  .satisfied:after{
+    content: ":)";
+    font-size: 400%;
+    color: #83d244;
+  }
+  .unsatisfied:after{
+    content: ":(";
+    font-size: 400%;
+    color: #eb2f2f;
+  }
+  .light:hover{
+    background-image: -webkit-linear-gradient(top, #fff, #f4f1ee);
+    background-image: linear-gradient(top, #fff, #f4f1ee);
+    color:#0088cc;
+  }
+  .neutral:hover:after{
+    color:#f99e4e;
+    text-shadow:0px 0px 6px #f99e4e;
+  }
+  .satisfied:hover:after{
+    color:#83d244;
+    text-shadow:0px 0px 6px #83d244;
+  }
+  .unsatisfied:hover:after{
+    color:#eb2f2f;
+    text-shadow:0px 0px 6px #eb2f2f;
+  }
+  .light:active{
+    background-image: -webkit-linear-gradient(top, #efedec, #f7f4f4);
+    background-image: linear-gradient(top, #efedec, #f7f4f4);
+    box-shadow: 0 3px 5px 0 rgba(0,0,0,.4), inset 0px -3px 1px 1px rgba(204,198,197,.5);
+  }
+  .light:active:after{
+    color:#dbd2d2;
+    text-shadow: 0px -1px 1px #bdb5b4, 0px 1px 1px white;
+  }
+    </style>
     <!-- Compressed JavaScript -->
-    <script src="https://rawgit.com/danguer/blog-examples/master/js/base64-binary.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js"></script>
-    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-    <script src="http://static.robotwebtools.org/roslibjs/current/roslib.js"></script>
-    <script src="./teleop.js"></script>
-    <script src="./quotes.js"></script>
-    <script src="https://rawgithub.com/PoeHaH/jscmd/master/src/jscmd-production.js"></script>
-    <script>
-      const CAMERA_TOPIC="/camera/image_raw";
-      const CAMERA_QUALITY="5";
-      /**
-       * Setup all GUI elements when the page is loaded. 
-       */
-      function init() {
-        // Connecting to ROS.
-        let ros = new ROSLIB.Ros({
-          url : "ws://"+window.location.hostname+":9090"
-        });
-        // Setup video stream
-        $("#video-display").attr("src", "http://"+window.location.hostname+":8080/stream?topic="+CAMERA_TOPIC+"&quality="+CAMERA_QUALITY);
-        $("#audio-ctrl").attr("src", "http://"+window.location.hostname+":8001");
-        $("#audio-ctrl").attr("type", "audio/mp3");
-        // Initialize the teleop.
-        let teleop = new KEYBOARDTELEOP.Teleop({
-          ros : ros,
-          topic : '/cmd_vel_mux/input/teleop'
-        });
-
-        const teleopCtrl = $('#teleop-control');
-        teleopCtrl.focus(function() {
-          teleopCtrl.text("Teleop Control Active");
-              teleopCtrl.addClass("success");
-              teleopCtrl.removeClass("alert");
-        });
-        teleopCtrl.focusout(function() {
-          teleopCtrl.text("Click Here to Engage Keyboard Teleop");
-              teleopCtrl.addClass("alert");
-              teleopCtrl.removeClass("success");
-        });
-        teleopCtrl.focus(); // start with control div focused
-
-        /* Come back to this later
-        let audioListener = new ROSLIB.Topic({
-          ros : ros,
-          name : '/audio',
-          messageType : 'audio_common_msgs/AudioData'
-        });
-
-        // Stream the audio from the robot as AudioData messages (chunked MP3),
-        // then decode and reassemble using the Web Audio API
-        const audioContext = new AudioContext();
-        let startTime = 0
-
-        audioListener.subscribe(function(message) {
-          const data = Base64Binary.decodeArrayBuffer(message.data);
-          audioContext.decodeAudioData(data, function(buffer) {
-            let source = audioContext.createBufferSource();
-            source.buffer = buffer;
-            source.connect(audioContext.destination);
-
-            source.start(startTime);
-            startTime += buffer.duration;
-          });
-        });
-        */
- 
-        // Publisher for predefined robot motion
-        var cmdVel = new ROSLIB.Topic({
-          ros : ros,
-          name : '/cmd_vel_mux/input/navi',
-          messageType : 'geometry_msgs/Twist'
-        });
-
-        // Publisher for robot text->speech
-        var speechPub = new ROSLIB.Topic({
-          ros : ros,
-          name : '/robotsound',
-          messageType : 'sound_play/SoundRequest'
-        });
-
-        // Publisher for rosbag recording control
-        var recordPub = new ROSLIB.Topic({
-          ros : ros,
-          name : '/rosbagctrl/named',
-          messageType : 'std_msgs/String'
-        });
-      
-        // Create a UI slider using JQuery UI.
-        $('#speed-slider').slider({
-          range : 'min',
-          min : 0,
-          max : 100,
-          value : 90,
-          slide : function(event, ui) {
-            // Change the speed label.
-            $('#speed-label').html('Speed: ' + ui.value + '%');
-            // Scale the speed.
-            teleop.scale = (ui.value / 100.0);
-          }
-        });
-        // Set the initial speed .
-        $('#speed-label').html('Speed: ' + ($('#speed-slider').slider('value')) + '%');
-        teleop.scale = ($('#speed-slider').slider('value') / 100.0);
-
-        const chatHistory = $('#chat-history');
-        function append_chat(text) {
-          let history = chatHistory.text();
-          history += text+"\n";
-          chatHistory.text(history);
-          chatHistory.scrollTop(chatHistory[0].scrollHeight);
-        }
-
-        let recording = false;
-        function start_recording(filename) {
-          recording = true;
-          recordPub.publish(new ROSLIB.Message({
-            data:""+filename+":start"
-          }));
-        }
-
-        function stop_recording(filename) {
-          recording = false;
-          recordPub.publish(new ROSLIB.Message({
-            data:""+filename+":stop"
-          }));
-        }
-
-        const recordBtn = $('#record-ctrl');
-        const recordName = $('#record-name');
-        const recordSession = $('#record-session');
-        recordBtn.click(function() {
-            const recName = recordName.val();
-            const session = recordSession.val();
-            const bagName = recName+'_'+session+'.bag';
-            if(recording) {
-              append_chat("SESSION RECORDING ENDED");
-              stop_recording(bagName);
-              recordName.prop('disabled', false);
-              recordSession.prop('disabled', false);
-              recordBtn.text("Start Recording");
-              recordBtn.addClass("success");
-              recordBtn.removeClass("alert");
-            } else {
-              append_chat("SESSION RECORDING STARTED");
-              recordName.prop('disabled', true);
-              recordSession.prop('disabled', true);
-              start_recording(bagName);
-              recordBtn.text("Stop Recording");
-              recordBtn.addClass("alert");
-              recordBtn.removeClass("success");
-            }
-        });
-
-        function send_speech(speech_string) {
-          append_chat(speech_string);
-          // sound -3 is "SAY"
-          // command 1 is "PLAY_ONCE"
-          speechPub.publish(new ROSLIB.Message({
-            sound: -3,
-            command: 1,
-            arg: speech_string,
-            arg2:""
-          }));
-        }
-
-        $('.speech-control').click(function(event) {
-          const sayings = SPEECH[event.target.id];
-          const sentence = sayings[Math.floor(Math.random() * sayings.length)];
-          send_speech(sentence);
-        });
-
-        function send_sequence(sequence, duration) {
-          const btns = $('.motion-control');
-          btns.prop('disabled', true);
-          let step = 0;
-          let loopTimer;
-          function pub() {
-            cmdVel.publish(new ROSLIB.Message(sequence[step]));
-            step += 1;
-            if (step >= sequence.length) {
-              clearInterval(loopTimer);
-              btns.prop('disabled', false);
-            }
-          }
-          loopTimer = setInterval(pub, 100);
-        }
-
-        $('#bump').click(function(){
-          append_chat("'BUMP' Motion Triggered");
-          send_sequence([
-            {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}
-          ], 2000);
-        });
-
-        $('#nudge').click(function(){
-          append_chat("'NUDGE' Motion Triggered");
-          send_sequence([
-            {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: -0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}
-          ], 2000);
-        });
-
-        $('#rotate').click(function(){
-          append_chat("'ROTATE' Motion Triggered");
-          send_sequence([
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}
-          ], 2000);
-        });
-
-        $('#shake').click(function(){
-          append_chat("'SHAKE' Motion Triggered");
-          send_sequence([
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -2.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.5}},
-            {linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}
-          ], 2000);
-        });
-
-        $('#chat-input').on('keydown', function(ev) {
-          if(ev.which === 13) {
-            send_speech($(this).val());
-            $(this).val("");
-            return false;
-          }
-        });
-      }
-    </script>
+    <script src="./dist/bundle.js"></script>
+    <script src="./js/janus.js"></script>
+    <script src="./js/janusStreaming.js"></script>
   </head>
   <body>
+    <div class="reveal" id="editModal">
+      <h2>Audio Controls</h2>
+      <table id="edit-audio">
+        <thead>
+          <tr>
+            <th>(Title)</th>
+            <th>Category</th>
+            <th>Controller Mapping</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table> 
+      <h2>Motion Controls</h2>
+      <table id="edit-motion">
+        <thead>
+          <tr>
+            <th>(Title)</th>
+            <th>Controller Mapping</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table> 
+      <h2>Miscellaneous Controls</h2>
+      <table id="edit-misc">
+        <thead>
+          <tr>
+            <th>(Title)</th>
+            <th>Controller Mapping</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <div>
+      <a id="save-mapping" style="float:left;">Save Changes</a><a id="load-mapping" style="float:right;">Cancel</a>
+      </div>
+    </div>
 
-    <div class="grid-y grid-frame">
-      <div class="cell cell-block-container medium-7">
+    <div class="grid-y grid-frame cell-block-container">
+      <div class="cell cell-block-y medium-7">
         <div class="grid-x">
-          <div class="cell medium-4">
+          <div class="cell medium-4 grid-padding-x">
             <div class="grid-y grid-frame">
-              <div class="cell medium-3">
+              <div class="cell shrink">
                 <h4>Motion Controls</h4>
-                <div class="small expanded button-group">
-                  <button type="button" class="button motion-control" id="bump">Bump</button>
-                  <button type="button" class="button motion-control" id="nudge">Nudge</button>
-                  <button type="button" class="button motion-control" id="rotate">Rotate</button>
-                  <button type="button" class="button motion-control" id="shake">Shake</button>
+                <div class="small motion-buttons button-group">
                 </div>
               </div>
-              <div class="cell medium-9">
+              <div class="cell shrink">
                 <h4>Audio Controls</h4>
                 <div>Basics</div>
-                <div class="small expanded button-group">
-                  <button type="button" id="say-hello" class="button speech-control">Hello</button>
-                  <button type="button" id="say-great" class="button speech-control">Great</button>
-                  <button type="button" id="say-ok" class="button speech-control">Ok</a>
-                  <button type="button" id="say-goodbye" class="button speech-control">Goodbye</button>
-                </div>
+                <div class="small basic-buttons button-group"></div>
                 <div>Questions</div>
-                <div class="small expanded button-group">
-                  <button type="button" id="say-joke" class="button speech-control">Joke</button>
-                  <button type="button" id="say-exercise" class="button speech-control">Exercise</button>
-                  <button type="button" id="say-snack" class="button speech-control">Snack</button>
-                  <button type="button" id="say-sure" class="button speech-control">Sure</button>
-                </div>
+                <div class="small question-buttons button-group"></div>
                 <div>Facts</div>
-                <div class="small expanded button-group">
-                  <button type="button" id="say-emotional-fact" class="button speech-control">Emotional</button>
-                  <button type="button" id="say-physical-fact" class="button speech-control">Physical</button>
-                  <button type="button" id="say-nutrition-fact" class="button speech-control">Nutritional</button>
-                </div>
+                <div class="small fact-buttons button-group"></div>
                 <div>Guided Orders</div>
-                <div class="small expanded button-group">
-                  <button type="button" id="say-pushups" class="button speech-control">Pushup</button>
-                  <button type="button" id="say-jumping-jacks" class="button speech-control">Jumping</button>
-                </div>
+                <div class="small guide-buttons button-group"></div>
+              </div>
+              <div class="cell shrink">
+                <p><a id="button-edit" data-open="editModal">Edit Controller Mapping</a></p>
               </div>
             </div>
           </div>
           <div class="cell medium-4">
-            <div class="grid-y grid-padding-y">
-              <div class="cell medium-8">
+            <div class="grid-y">
+              <div id="remote-feed" class="cell medium-8">
+                <audio id="audio-stream" style="display:hide;" autoplay></audio>
                 <img id="video-display"/>
               </div>
-              <div class="cell medium-2">
-                <audio id="audio-ctrl" autoplay></audio>
+              <div class="cell medium-4">
                 <div id="speed-label"></div>
                 <div id="speed-slider"></div>
-              </div>
-              <div class="cell medium-2">
-                <div id="teleop-control" class="card" tabindex="0" style="text-align:center">
-                Click Here to Engage Keyboard Teleop
-                </div>
+                <div id="rotation-label"></div>
+                <div id="rotation-slider"></div>
               </div>
             </div>
           </div>
-          <div id="cmd-div" class="cell card medium-4">
+          <div id="cmd-div" class="cell medium-4">
           </div>
         </div>
       </div>
-      <div class="cell card auto">
-        <div id="chat-history" style="flex:1;overflow-y:scroll;white-space:pre;"/></div>
-        <input id="chat-input" placeholder="Type a Message"></input>
+      <div class="cell auto">
+        <div class="grid-x">
+          <div class="cell card medium-4">
+            <input id="chat-input" placeholder="Type a Message"></input>
+            <div id="chat-history" style="flex:1;overflow-y:auto;white-space:pre;"/></div>
+          </div>
+        </div>
       </div>
       <div class="cell shrink">
         <div class="grid-x">
-          <div class="cell card medium-5">
+          <div class="cell card medium-4">
             <h5>Session Details</h5>
             <div class="cell grid-x shrink">
               <div class="cell shrink">
                 <label for="name" class="text-right">Participant:</label>
                 <label for="session_no" class="text-right">Session:</label>
               </div>
-              <div class="cell medium-6 cell-block-container">
+              <div class="cell medium-5 cell-block-container">
                 <input id="record-name" name="name" placeholder="Name"/>
                 <input id="record-session" name="session_no" placeholder="Session"/>
               </div>
             </div>
           </div>
-          <div class="cell card medium-2">
+          <div class="cell card shrink">
             <button type="button" id="record-ctrl" class="success button">Start Recording</button>
           </div>
-          <div class="cell card medium-5">
+          <div>
+            <a href="#" id="green-btn-indicator" class="button light satisfied"></a>
+            <a href="#" id="yellow-btn-indicator" class="button light neutral"></a>
+            <a href="#" id="red-btn-indicator" class="button light unsatisfied"></a>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      $(document).foundation();
-      cmd.init({container:'cmd-div', sandbox:false});
-      $(document).ready(init);
+      /*
+      $(document).ready(() => {
+        init();
+        teleop.on('buttonDown', idx => {
+            console.log(`pressed:${idx}`);
+            gamepadButtonHandler(idx);
+        });
+        teleop.on('buttonUp', idx => {
+            console.log(`released:${idx}`);
+        });
+        teleop.on('change', twist => {
+            console.log('updated:'+JSON.stringify(twist));
+        });
+        teleop.on('changeTilt', tilt => {
+            console.log('updatedTilt: '+tilt);
+        });
+      });
+      */
+
     </script>
 
   </body>

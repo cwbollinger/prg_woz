@@ -1,13 +1,27 @@
 <launch>
-  <node pkg="usb_cam" name="camera" type="usb_cam_node">
-    <param name="framerate" value="10"/>
-    <param name="video_device" value="/dev/video1"/>
-    <param name="pixel_format" value="yuyv"/>
+  <node pkg="extended_teleop" name="web_teleop_server" type="server_script.py" cwd="node"/>
+  <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket">
+    <param name="authenticate" value="false" />
+    <param name="port" value="9090"/>
+    <param name="address" value="0.0.0.0"/>
+    <param name="retry_startup_delay" value="5"/>
+    <param name="fragment_timeout" value="600"/>
+    <param name="delay_between_messages" value="0"/>
+    <param name="max_message_size" value="None"/>
+    
+    <param name="topics_glob" value="[*]"/>
+    <param name="services_glob" value="[*]"/>
+    <param name="params_glob" value="[*]"/>
+
+    <param name="bson_only_mode" value="false"/>
   </node>
-  <node pkg="audio_capture" name="audio_capture" type="audio_capture"/>
-  <node pkg="sound_play" name="sound_play" type="soundplay_node.py"/>
-  <node pkg="rosbridge_server" name="socket_server" type="rosbridge_websocket"/>
+
   <node pkg="web_video_server" name="web_video_server" type="web_video_server"/>
-  <node pkg="extended_teleop" name="teleop_server" type="server_script.py" cwd="node"/>
-  <node pkg="extended_teleop" name="rosbag_control" type="rosbag_remote_record.py" args="-m ros -i '/audio /cmd_vel_mux/input/teleop /cmd_vel_mux/input/navi /robotsound' -f default.bag -d ~/bags -t /rosbagctrl"/>
+
+  <node pkg="audio_play" name="audio_stream" type="audio_stream"/>
+  <node pkg="extended_teleop" name="web_audio_server" type="launch_janus.sh"/>
+  <node pkg="sound_play" name="sound_play" type="soundplay_node.py"/>
+  <node pkg="extended_teleop" name="fast_speech" type="fast_speech.py" output="screen"/>
+
+  <node pkg="extended_teleop" name="rosbag_control" type="rosbag_remote_record.py" args="-m ros -i '/audio /cmd_vel_mux/input/teleop /cmd_vel_mux/input/navi /web_audio /robotsound /pushed /light /camera/image_compressed' -f default.bag -d /mnt/storage/bags -t /rosbagctrl"/>
 </launch>
