@@ -73,10 +73,8 @@ speedBindings={
           }
 
 otherBindings={
-	'h':"Hello, my name is Turtle Bot",
-        'n':"No thanks",
-        'y':"Yes, please.",
-        't':"",
+	    'y':"",
+        'n':"",
 	  }
 
 def getKey():
@@ -100,7 +98,7 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('turtlebot_teleop')
-    pub = rospy.Publisher('~cmd_vel', Twist, queue_size=5)
+    pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=2)
     rospy.set_param("/synth_voice", "voice_kal_diphone")  # Initialize as default voice
 
     soundhandle = SoundClient()
@@ -120,10 +118,13 @@ if __name__=="__main__":
             key = getKey()
 
             if key in otherBindings.keys():
-                if key == 't':
-                    soundhandle.playWave("/home/owner/Desktop/test.ogg")
+                if key == 'y':  # 'Affirmative' be-boop
+                    #soundhandle.play( 3 )
+                    soundhandle.playWave("/home/sweat/Desktop/boop.wav")
                 else:
-                    soundhandle.say( otherBindings[key], rospy.get_param("/synth_voice") )
+                    soundhandle.playWave("/home/sweat/Desktop/horn.wav")
+                #else:           # 'Negative' foghorn
+                    #soundhandle.play( 4 )
 
             elif key in moveBindings.keys():
                 x = moveBindings[key][0]
