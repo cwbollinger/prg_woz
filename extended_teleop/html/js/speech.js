@@ -5,7 +5,18 @@ const SPEECH = {
         "Hello!",
         "Greetings",
     ]},
+    "say-buttons": {name: 'Buttons', category: 'basic', data: [
+        "You can use my buttons to reply.",
+    ]},
     "say-great": {name: 'Great', category: 'basic', data: ["Great!"]},
+    "say-good": {name: 'Good Job', category: 'basic', data: [
+        "Good Job!",
+        "Nice Job!",
+        "Nice Work!"
+    ]},
+    "say-thanks": {name: 'Thanks', category: 'basic', data: [
+        "Thank you!",
+    ]},
     "say-ok": {name: 'OK', category: 'basic', data: [
         "OK",
         "Sounds Good!"
@@ -31,13 +42,22 @@ const SPEECH = {
         "The difference between a cat and a complex sentence is that a cat has claws at the end of its paws and a complex sentence has a pause at the end of its clause.",
         "What's the difference between a pourly dressed man on a unicycle and a well dressed man on a bicycle?... A tire!",
     ]},
-    "say-exercise": {name: 'Exercise', category: 'question', data: [
-        "It's time for some exercise!",
-        "Get ready to do some exercise",
-        "Let's get up and moving!",
-        "Exercise is an important part of overall health!"
+    "say-available": {name: 'Available?', category: 'question', data: [
+        "Is now a good time?"
     ]},
-    "say-snack": {name: 'Snack?', category: 'question', data: ["Would you like a healthy snack option?"]},
+    "say-how2": {name: 'How are You? #1', category: 'question', data: [
+        "How are you feeling today?"
+    ]},
+    "say-how1": {name: 'How are You? #2', category: 'question', data: [
+        "How are you feeling now?"
+    ]},
+    "say-exercise": {name: 'Exercise?', category: 'question', data: [
+        "Would you like to do some jumping jacks?",
+        "Would you like to do some squats?",
+        "Would you like to do some pushups?",
+        "Would you like to go for a short walk?"
+    ]},
+    "say-snack": {name: 'Snack', category: 'question', data: ["Help yourself to a healthy snack!"]},
     "say-sure": {name: 'Sure?', category: 'question', data: ["Are you sure?"]},
     "say-emotional-fact": {name: 'Emotional', category: 'fact', data: [
         "Laughing 100 times is equivalent to 15 minutes of exercise on a stationary bicycle.",
@@ -137,9 +157,9 @@ const SPEECH = {
         "A lack of water can cause a range of problems, such as constipation, asthma, allergy and migraines.",
         "Your muscles and joints require water in order to stay energized, lubricated and healthy."
     ]},
-    "say-pushups": {name: 'Pushups', category: 'guide', data: ["Now it's time for some pushups! Tell me when you're ready."]},
-    "say-jumping-jacks": {name: 'Jumping Jacks', category: 'guide', data: ["Jumping jacks are fun, let's do some! Or you can, I don't have the limbs required.   Tell me when you're ready."]},
-    "say-squats": {name: 'Squats', category: 'guide', data: ["Let's do some chair squats. Just stand and sit ten times. Tell me when you're ready."]},
+    "say-pushups": {name: 'Pushups', category: 'guide', data: ["Get in pushup position! Tell me when you're ready."]},
+    "say-jumping-jacks": {name: 'Jumping Jacks', category: 'guide', data: ["Stand up and make some space! Tell me when you're ready."]},
+    "say-squats": {name: 'Squats', category: 'guide', data: ["Just stand and sit ten times. Tell me when you're ready."]},
     "say-walk": {name: 'Walk', category: 'guide', data: ["Take a quick walk to the end of the building and back."]},
 };
 export default SPEECH;

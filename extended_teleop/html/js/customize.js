@@ -180,7 +180,7 @@ function setupButtons(type, category) {
     // console.log(command);
     // command = say-x
     if(commands[command].category === category) {
-      const text = `<button type="button" id="${command}" class="button ${type}-control">${commands[command].name}</button>`;
+      const text = `<button type="button" id="${command}" class="button small ${type}-control">${commands[command].name}</button>\n`;
       $(group).last().append(text);
     }
   }
