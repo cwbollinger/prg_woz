@@ -5,10 +5,13 @@ const SPEECH = {
         "Hello!",
         "Greetings",
     ]},
+    "say-no": {name: 'No', category: 'basic', data: ["No"]},
     "say-buttons": {name: 'Buttons', category: 'basic', data: [
         "You can use my buttons to reply.",
     ]},
     "say-great": {name: 'Great', category: 'basic', data: ["Great!"]},
+    "say-hopeful": {name: 'Hopefully...', category: 'basic', data: ["Hopefully exercise can make you feel better!"]},
+    "say-help-mood": {name: 'Help Mood', category: 'basic', data: ["Exercise can often help your mood"]},
     "say-good": {name: 'Good Job', category: 'basic', data: [
         "Good Job!",
         "Nice Job!",
@@ -17,6 +20,9 @@ const SPEECH = {
     "say-thanks": {name: 'Thanks', category: 'basic', data: [
         "Thank you!",
     ]},
+    "say-welcome": {name: 'You\'re Welcome', category: 'basic', data: [
+        "Your Welcome!",
+    ]},
     "say-ok": {name: 'OK', category: 'basic', data: [
         "OK",
         "Sounds Good!"
@@ -24,23 +30,6 @@ const SPEECH = {
     "say-goodbye": {name: 'Goodbye', category: 'basic', data: [
         "Goodbye, Have a nice day!",
         "Nice talking with you.",
-    ]},
-    "say-joke": {name: 'Joke', category: 'question', data: [
-        "A veegan said, 'People who sell meat are gross.' ... I said, 'People who sell vegetables are grocers.'",
-        "What is green and smells like red paint? ... Green Paint.",
-        "What is green and has wheels? ... Grass. I lied about the wheels.", 
-        "I've been a gym member for 6 months without any progress... I should probably go there personally and see what the issue is.",
-        "My girlfriend said, 'You act too much like a detective, I want to split up.' ... I said to her, 'Good i'd ea, we can cover more ground,that way.'",
-        "How many tickles does it take to make an octopus laugh? ... Ten tickles",
-        "The depressing thing about tennis is that no matter how good I get, I'll never be as good as AY wall.",
-        "My carbon monoxide detector wont stop beeping... It's starting to give me ay head ache and dizziness.",
-        "It's very risky when you buttt dial somebody and they pick up, because then it's your ass on the line.",
-        "I just read a book ent-eye-tild, '50 Things to do Before You Die'... I was suprised that none of them were to 'Shout for help'",
-        "Two cannibals are eating a clown. One says to the other, 'Do you think this tastes funny?'",
-        "I told my doctor that I broke my ahrm in two places... He recommended that I stop going to those two places.",
-        "I should have been sad when my flashlight batteries died... but I was de lighted.",
-        "The difference between a cat and a complex sentence is that a cat has claws at the end of its paws and a complex sentence has a pause at the end of its clause.",
-        "What's the difference between a pourly dressed man on a unicycle and a well dressed man on a bicycle?... A tire!",
     ]},
     "say-available": {name: 'Available?', category: 'question', data: [
         "Is now a good time?"
@@ -59,6 +48,23 @@ const SPEECH = {
     ]},
     "say-snack": {name: 'Snack', category: 'question', data: ["Help yourself to a healthy snack!"]},
     "say-sure": {name: 'Sure?', category: 'question', data: ["Are you sure?"]},
+    "say-joke": {name: 'Joke', category: 'question', data: [
+        "A veegan said, 'People who sell meat are gross.' ... I said, 'People who sell vegetables are grocers.'",
+        "What is green and smells like red paint? ... Green Paint.",
+        "What is green and has wheels? ... Grass. I lied about the wheels.", 
+        "I've been a gym member for 6 months without any progress... I should probably go there personally and see what the issue is.",
+        "My girlfriend said, 'You act too much like a detective, I want to split up.' ... I said to her, 'Good i'd ea, we can cover more ground,that way.'",
+        "How many tickles does it take to make an octopus laugh? ... Ten tickles",
+        "The depressing thing about tennis is that no matter how good I get, I'll never be as good as AY wall.",
+        "My carbon monoxide detector wont stop beeping... It's starting to give me ay head ache and dizziness.",
+        "It's very risky when you buttt dial somebody and they pick up, because then it's your ass on the line.",
+        "I just read a book ent-eye-tild, '50 Things to do Before You Die'... I was suprised that none of them were to 'Shout for help'",
+        "Two cannibals are eating a clown. One says to the other, 'Do you think this tastes funny?'",
+        "I told my doctor that I broke my ahrm in two places... He recommended that I stop going to those two places.",
+        "I should have been sad when my flashlight batteries died... but I was de lighted.",
+        "The difference between a cat and a complex sentence is that a cat has claws at the end of its paws and a complex sentence has a pause at the end of its clause.",
+        "What's the difference between a pourly dressed man on a unicycle and a well dressed man on a bicycle?... A tire!",
+    ]},
     "say-emotional-fact": {name: 'Emotional', category: 'fact', data: [
         "Laughing 100 times is equivalent to 15 minutes of exercise on a stationary bicycle.",
         "Sleeping less than 7 hours each night reduces your life expectancy.",
@@ -157,9 +163,9 @@ const SPEECH = {
         "A lack of water can cause a range of problems, such as constipation, asthma, allergy and migraines.",
         "Your muscles and joints require water in order to stay energized, lubricated and healthy."
     ]},
-    "say-pushups": {name: 'Pushups', category: 'guide', data: ["Get in pushup position! Tell me when you're ready."]},
+    "say-pushups": {name: 'Pushups', category: 'guide', data: ["Get in pushup position! Tell me when your ready."]},
     "say-jumping-jacks": {name: 'Jumping Jacks', category: 'guide', data: ["Stand up and make some space! Tell me when you're ready."]},
     "say-squats": {name: 'Squats', category: 'guide', data: ["Just stand and sit ten times. Tell me when you're ready."]},
-    "say-walk": {name: 'Walk', category: 'guide', data: ["Take a quick walk to the end of the building and back."]},
+    "say-walk": {name: 'Walk', category: 'guide', data: ["Let's take a quick walk to the end of the building and back ... Follow me!"]},
 };
 export default SPEECH;
