@@ -61,16 +61,17 @@ const CAMERA_QUALITY='10';
 let teleop = null;
 let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
 
-let BUTTON_ACTIONS = null;
+let CONTROLLER_MAPPING = null;
+let ACTION_MAPPING = null;
 
 
 export function saveButtonActions() {
   console.log('saving the controller mapping');
   $.ajax({
     type: "post",
-    url: "/api/v1/map",
+    url: "/api/v1/actionMapping",
     contentType: "application/json; charset=utf-8",
-    data: JSON.stringify(BUTTON_ACTIONS),
+    data: JSON.stringify(ACTION_MAPPING),
     success: function(data) {
       console.log("Save Success!");
     },
@@ -81,20 +82,33 @@ export function saveButtonActions() {
   });
 }
 
-export function loadButtonActions() {
+
+export function loadControllerMapping() {
   console.log('loading the controller mapping');
-  $.get("/api/v1/map", function(data) {
+  $.get("/api/v1/controllerMapping", function(data) {
     console.log(data);
-    BUTTON_ACTIONS = data;
+    CONTROLLER_MAPPING = data;
   }, "json");
 }
+
+
+export function loadButtonActions() {
+  console.log('loading the action mapping');
+  $.get("/api/v1/actionMapping", function(data) {
+    console.log(data);
+    ACTION_MAPPING = data;
+  }, "json");
+}
+
+loadControllerMapping();
 loadButtonActions(); // do this fast
+
 
 function updateTable(tableId, tableCommand, commandVar) {
   const threeRows = tableId === 'edit-audio' ? true : false;
   let btnMap = {};
-  for(let btn in BUTTON_ACTIONS) {
-    btn = BUTTON_ACTIONS[btn];
+  for(let btn in ACTION_MAPPING) {
+    btn = ACTION_MAPPING[btn];
     if(btn.command === tableCommand) {
       btnMap[btn.type] = btn.buttonName;
     }
@@ -109,8 +123,8 @@ function updateTable(tableId, tableCommand, commandVar) {
       selected = 'selected';
     }
     let selectStr = `<select ${selected} class="${tableId}-select"><option value="unmapped">unmapped</option>`;
-    for(let id in BUTTON_ACTIONS) {
-      const name = BUTTON_ACTIONS[id].buttonName;
+    for(let id in ACTION_MAPPING) {
+      const name = ACTION_MAPPING[id].buttonName;
       selected = str === name ? 'selected' : '';
       selectStr += `<option ${selected} value="${name}">${name}</option>`;
     }
@@ -120,37 +134,40 @@ function updateTable(tableId, tableCommand, commandVar) {
   }
 }
 
+
 export function updateEditTable() {
     updateTable('edit-audio', 'speak', SPEECH);
     updateTable('edit-motion', 'move', MOTION);
 }
 
+
 function remapButton(buttonName, command, type) {
   let foundId = false;
   let id = null;
-  for(id in BUTTON_ACTIONS) {
-    if(BUTTON_ACTIONS[id].buttonName === buttonName) {
+  for(id in ACTION_MAPPING) {
+    if(ACTION_MAPPING[id].buttonName === buttonName) {
       foundId = true;
       break;
     }
   }
   if(!foundId) {
     console.log(`button not found matching ${buttonName}, clearing binding for ${command}:${type}`);
-    for(let action in BUTTON_ACTIONS) {
-      if(BUTTON_ACTIONS[action].type === type && BUTTON_ACTIONS[action].command === command) {
-        BUTTON_ACTIONS[action].command = null;
-        BUTTON_ACTIONS[action].type = null;
+    for(let action in ACTION_MAPPING) {
+      if(ACTION_MAPPING[action].type === type && ACTION_MAPPING[action].command === command) {
+        ACTION_MAPPING[action].command = null;
+        ACTION_MAPPING[action].type = null;
       }
     }
     return;
   } else {
-    BUTTON_ACTIONS[id].command = command;
-    BUTTON_ACTIONS[id].type = type;
+    ACTION_MAPPING[id].command = command;
+    ACTION_MAPPING[id].type = type;
     console.log(`remapped ${buttonName} to Command ${command}: ${type}`);
-    console.log(BUTTON_ACTIONS);
+    console.log(ACTION_MAPPING);
   }
   updateEditTable();
 }
+
 
 function setupButtons(type, category) {
   // console.log(`setting up ${type} buttons for ${category}`);
@@ -163,40 +180,15 @@ function setupButtons(type, category) {
     // console.log(command);
     // command = say-x
     if(commands[command].category === category) {
-      const text = `<button type="button" id="${command}" class="button ${type}-control">${commands[command].name}</button>`;
+      const text = `<button type="button" id="${command}" class="button small ${type}-control">${commands[command].name}</button>\n`;
       $(group).last().append(text);
     }
   }
 }
 
+
 let rosClient = null;
 let chatHistory = null;
-
-function saveHistory() {
-  console.log('saving console text');
-  $.ajax({
-    type: "post",
-    url: "/api/v1/history",
-    contentType: "application/json; charset=utf-8",
-    data: JSON.stringify(BUTTON_ACTIONS),
-    success: function(data) {
-      console.log("Save Success!");
-    },
-    error: function(error) {
-      console.log("Save Error! Error: ");
-      console.log(error);
-    }
-  });
-}
-
-function loadHistory() {
-  console.log('loading text history');
-  $.get("/api/v1/history", function(data) {
-    console.log(data);
-    chatHistory.setFullHistory(data);
-  }, "json");
-}
-//loadHistory();
 
 
 function sendSpeech(speech_string) {
@@ -204,12 +196,14 @@ function sendSpeech(speech_string) {
   rosClient.topic.publish('/web_audio', 'std_msgs/String', {data: speech_string});
 }
 
+
 function triggerSpeech(speechId) {
   const sayings = SPEECH[speechId].data;
   const sentence = sayings[Math.floor(Math.random() * sayings.length)];
   chatHistory.addText(sentence);
   sendSpeech(sentence);
 }
+
 
 /**
  * Setup all GUI elements when the page is loaded. 
@@ -231,13 +225,13 @@ export function init() {
   const chatInput = document.getElementById('chat-input');
   const chatHistoryDiv = document.getElementById('chat-history');
   chatHistory = new ChatHistory(chatInput, chatHistoryDiv);
-  chatHistory.onEnterCallback = (speech) => {
-    sendSpeech(speech);
-    //saveHistory();
+  chatHistory.onEnterCallback = (text) => {
+    sendSpeech(text);
   };
 
   // Setup video stream
   document.getElementById('video-display').setAttribute('src', `http://${window.location.hostname}:8080/stream?topic=${CAMERA_TOPIC}&quality=${CAMERA_QUALITY}`);
+
 
   $('#edit-audio').on('change', '.edit-audio-select', (e) => {
     const boundBtnName = e.target.value;
@@ -247,6 +241,7 @@ export function init() {
     remapButton(boundBtnName, 'speak', commandType);
   });
 
+
   $('#edit-motion').on('change', '.edit-motion-select', (e) => {
     const boundBtnName = e.target.value;
     const target = $(e.target);
@@ -255,21 +250,25 @@ export function init() {
     remapButton(boundBtnName, 'move', commandType);
   });
 
+
   const redIndicator = document.getElementById('red-btn-indicator');
   const yellowIndicator = document.getElementById('yellow-btn-indicator');
   const greenIndicator = document.getElementById('green-btn-indicator');
   const buttonIndicator = new ButtonIndicator(rosClient, [redIndicator, yellowIndicator, greenIndicator]);
   buttonIndicator.chatHistory = chatHistory;
 
+
   teleop = new GAMEPADTELEOP.Teleop({
     rosClient : rosClient,
     topic : '/cmd_vel_mux/input/teleop'
   });
 
+
   teleop.on('buttonDown', idx => {
     console.log(`pressed:${idx}`);
     gamepadButtonHandler(idx);
   });
+
 
   // Create a UI slider using JQuery UI.
   const speedSlider = $('#speed-slider');
@@ -290,6 +289,7 @@ export function init() {
   speedLabel.html(`Speed: ${speedSlider.slider('value')}%`);
   teleop.scale = speedSlider.slider('value') / 100.0;
 
+
   const rotSpeedSlider = $('#rotation-slider');
   const rotSpeedLabel = $('#rotation-label');
   rotSpeedSlider.slider({
@@ -308,15 +308,18 @@ export function init() {
   rotSpeedLabel.html(`Speed: ${rotSpeedSlider.slider('value')}%`);
   teleop.rotationScale = rotSpeedSlider.slider('value') / 100.0;
 
+
   const recordBtn = $('#record-ctrl');
   const recordName = $('#record-name');
   const recordSession = $('#record-session');
   const recordButton = new RecordButton(recordBtn, recordName, recordSession);
   recordButton.chatHistory = chatHistory; // hack for logging
 
+
   $('.speech-control').click((e) => {
     triggerSpeech(e.target.id)
   });
+
 
   const motionBtns = $('.motion-control');
   function sendSequence(sequence, duration) {
@@ -335,6 +338,7 @@ export function init() {
     loopTimer = setInterval(pub, 100);
   }
 
+
   function triggerMotion(motionId) {
     chatHistory.addText(`'${motionId.toUpperCase()}' Motion Triggered`);
     const sequence = MOTION[motionId].data;
@@ -342,12 +346,14 @@ export function init() {
     sendSequence(sequence, null);
   }
 
+
   motionBtns.click((e) => {
     triggerMotion(e.target.id)
   });
 
+
   gamepadButtonHandler = function(buttonIdx) {
-      let action = BUTTON_ACTIONS[buttonIdx]
+      let action = ACTION_MAPPING[CONTROLLER_MAPPING[buttonIdx]];
       console.log(action);
       if(action) {
           switch(action.command) {

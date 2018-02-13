@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+    <include file="$(find extended_teleop)/launch/hardware.launch"/>
+    <include file="$(find extended_teleop)/launch/web_teleop.launch"/>
+</launch>

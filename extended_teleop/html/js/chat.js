@@ -1,10 +1,12 @@
 
 export class ChatHistory {
   constructor(inputElement, historyElement) {
+    this.url = "/api/v1/chatHistory";
     this.inputElement = inputElement;
     this.historyElement = historyElement;
     this.chatHistory = [];
     this.historyPointer = -1;
+    this.loadHistory();
 
     this.inputElement.addEventListener('keydown', (ev) => {
       if(ev.which === 13) { // enter
@@ -13,7 +15,9 @@ export class ChatHistory {
           this.addText(text);
           this.clearHistoryPointer();
           this.inputElement.value = this.getHistory();
-          this.onEnterCallback(text);
+          if(this.onEnterCallback !== undefined) { // if someone has set this
+            this.onEnterCallback(text);
+          }
         }
         return false;
       } else if (ev.which === 27) { // esc
@@ -51,14 +55,6 @@ export class ChatHistory {
     this.historyPointer = -1; // clear
   }
 
-  setFullHistory(history) { // only pass array
-    this.chatHistory = history;
-  }
-
-  getFullHistory() {
-    return this.chatHistory;
-  }
-
   getHistory() {
     console.log("history: " + this.historyPointer);
     let retval = ""
@@ -72,7 +68,33 @@ export class ChatHistory {
   addText(text) {
     this.chatHistory.unshift(text);
     this.historyElement.innerHTML = this.chatHistory.join('\n');
+    this.saveToHistory(text);
     //this.historyElement.scrollTop(this.chatHistory[0].scrollHeight);
+  }
+
+  loadHistory() {
+    console.log('loading text history');
+    $.get(this.url, function(data) {
+      console.log(data);
+      this.chatHistory = data;
+    }, "json");
+  }
+
+  saveToHistory(text) {
+    console.log('saving new text to history');
+    $.ajax({
+      type: "post",
+      url: this.url,
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(text),
+      success: function(data) {
+        console.log("Save Success!");
+      },
+      error: function(error) {
+        console.log("Save Error! Error: ");
+        console.log(error);
+      }
+    });
   }
 
 }
