@@ -1,0 +1,9 @@
+<launch>
+  <node name="erratic_driver" pkg="erratic_player" type="erratic_player" />
+  <node name="arduino_link" pkg="rosserial_python" type="serial_node.py">
+    <param name="port" value="/dev/arduino"/>
+  </node>
+
+  <include file="$(find freenect_launch)/launch/freenect.launch"/>
+
+</launch>
