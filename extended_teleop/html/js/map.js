@@ -113,10 +113,11 @@ export function initMap(rosClient) {
 
   viewer.scene.on("stagemousedown", function(evt) {
     console.log(evt);
-    x_offset = gridClient.currentGrid.pose.position.x;
-    y_offset = gridClient.currentGrid.pose.position.y;
-    x_click_map = evt.stageX/viewer.scene.scaleX+x_offset;
-    y_click_map = evt.stageY/viewer.scene.scaleY+y_offset;
+    let x_offset = gridClient.currentGrid.pose.position.x;
+    let y_offset = gridClient.currentGrid.pose.position.y;
+    console.log(x_offset + ', ' +  y_offset);
+    let x_click_map = evt.stageX/viewer.scene.scaleX+x_offset;
+    let y_click_map = evt.stageY/viewer.scene.scaleY+y_offset+2.2; //why is this 2.2 offset needed to make the cursor work??
     //console.log('Transformed click coordinates');
     console.log(x_click_map + ', ' +  y_click_map);
 
