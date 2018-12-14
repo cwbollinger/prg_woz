@@ -5,14 +5,17 @@ const SPEECH = {
         "Hello!",
         "Greetings",
     ]},
-    "say-no": {name: 'No', category: 'basic', data: ["No"]},
-    "say-buttons": {name: 'Buttons', category: 'basic', data: [
-        "You can use my buttons to reply.",
+    "say-ok": {name: 'OK', category: 'basic', data: [
+        "OK",
+        "Sounds Good!"
     ]},
+    "say-sure": {name: 'Sure', category: 'basic', data: [
+        "Sure",
+        "Fine with me"
+    ]},
+    "say-no": {name: 'No', category: 'basic', data: ["No"]},
     "say-great": {name: 'Great', category: 'basic', data: ["Great!"]},
-    "say-hopeful": {name: 'Hopefully...', category: 'basic', data: ["Hopefully exercise can make you feel better!"]},
-    "say-help-mood": {name: 'Help Mood', category: 'basic', data: ["Exercise can often help your mood"]},
-    "say-good": {name: 'Good Job', category: 'basic', data: [
+    "say-good": {name: 'Good Job!', category: 'basic', data: [
         "Good Job!",
         "Nice Job!",
         "Nice Work!"
@@ -23,14 +26,22 @@ const SPEECH = {
     "say-welcome": {name: 'You\'re Welcome', category: 'basic', data: [
         "Your Welcome!",
     ]},
-    "say-ok": {name: 'OK', category: 'basic', data: [
-        "OK",
-        "Sounds Good!"
+    "say-final": {name: 'Last Day', category: 'basic', data: [
+        "Today is my last day in service. Thanks for participating!",
     ]},
     "say-goodbye": {name: 'Goodbye', category: 'basic', data: [
-        "Goodbye, Have a nice day!",
-        "Nice talking with you.",
+        "Goodbye, Have a nice day!"
     ]},
+    "say-intro": {name: 'Introduce', category: 'basic', data: ["I am resolution bot"]},
+    "say-buttons": {name: 'Buttons', category: 'basic', data: [
+        "You can use my buttons to reply.",
+    ]},
+    "say-advertise": {name: 'Advertise', category: 'basic', data: ["If you would like to sign up, take a flyer"]},
+    "say-laugh": {name: 'Laugh', category: 'basic', data: [
+        "Ha Ha Ha",
+    ]},
+    "say-hopeful": {name: 'Hopefully...', category: 'basic', data: ["Hopefully exercise can make you feel better!"]},
+    "say-help-mood": {name: 'Help Mood', category: 'basic', data: ["Exercise can often help your mood"]},
     "say-available": {name: 'Available?', category: 'question', data: [
         "Is now a good time?"
     ]},
@@ -46,8 +57,8 @@ const SPEECH = {
         "Would you like to do some pushups?",
         "Would you like to go for a short walk?"
     ]},
-    "say-snack": {name: 'Snack', category: 'question', data: ["Help yourself to a healthy snack!"]},
     "say-sure": {name: 'Sure?', category: 'question', data: ["Are you sure?"]},
+    "say-snack": {name: 'Snack', category: 'question', data: ["Help yourself to a healthy snack!"]},
     "say-joke": {name: 'Joke', category: 'question', data: [
         "A veegan said, 'People who sell meat are gross.' ... I said, 'People who sell vegetables are grocers.'",
         "What is green and smells like red paint? ... Green Paint.",

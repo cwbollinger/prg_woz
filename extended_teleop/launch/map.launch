@@ -1,0 +1,11 @@
+<launch>
+  <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher"/>
+
+  <node name="map_server" pkg="map_server" type="map_server" args="/home/blood/maps/prl.yaml"/>
+
+  <include file="$(find turtlebot_navigation)/launch/includes/amcl/amcl.launch.xml">
+    <arg name="scan_topic" value="/scan_filtered"/>
+  </include>
+
+  <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
+</launch>

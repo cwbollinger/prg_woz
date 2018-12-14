@@ -37,5 +37,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
     loadButtonActions();
   });
 
+
+  $("#chat-input").blur(function(event) {
+      const target = event.relatedTarget;
+      if(target == null || target.tagName.toUpperCase() != "INPUT") {
+          setTimeout(function() { $("#chat-input").focus(); }, 10);
+      }
+  });
+  $("#chat-input").focus();
   init();
 });

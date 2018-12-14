@@ -57,7 +57,7 @@ class RecordButton {
 
 
 const CAMERA_TOPIC='/camera/image_raw';
-const CAMERA_QUALITY='10';
+const CAMERA_QUALITY='7';
 
 let teleop = null;
 let gamepadButtonHandler = null; //TODO: this is horrible, reorder code
@@ -181,7 +181,7 @@ function setupButtons(type, category) {
     // console.log(command);
     // command = say-x
     if(commands[command].category === category) {
-      const text = `<button type="button" id="${command}" class="button small ${type}-control">${commands[command].name}</button>\n`;
+      const text = `<button type="button" id="${command}" class="button ${type}-control">${commands[command].name}</button>\n`;
       $(group).last().append(text);
     }
   }

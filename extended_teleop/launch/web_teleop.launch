@@ -23,5 +23,7 @@
   <node pkg="sound_play" name="sound_play" type="soundplay_node.py"/>
   <node pkg="extended_teleop" name="fast_speech" type="fast_speech.py" output="screen"/>
 
+  <!--
   <node pkg="extended_teleop" name="rosbag_control" type="rosbag_remote_record.py" args="-m ros -i '/audio /cmd_vel_mux/input/teleop /cmd_vel_mux/input/navi /web_audio /robotsound /pushed /light /camera/image_compressed' -f default.bag -d /mnt/storage/bags -t /rosbagctrl"/>
+  -->
 </launch>

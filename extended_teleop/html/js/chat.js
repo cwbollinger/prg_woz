@@ -74,9 +74,12 @@ export class ChatHistory {
 
   loadHistory() {
     console.log('loading text history');
-    $.get(this.url, function(data) {
-      console.log(data);
-      this.chatHistory = data;
+    $.get(this.url, (data) => {
+      for(let elem in data) {
+        console.log(data[elem]);
+        this.chatHistory.unshift(data[elem]['text']);
+      }
+      this.historyElement.innerHTML = this.chatHistory.join('\n');
     }, "json");
   }
 

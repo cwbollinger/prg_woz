@@ -126,6 +126,7 @@
     <script src="./js/createjs.js"></script>
     <script src="./js/ros2d.js"></script>
     <script src="./dist/bundle.js"></script>
+    <!--  Just use ROS for audio for now, pending ROS2 additions for unreliable transport -->
     <script src="./js/janus.js"></script>
     <script src="./js/janusStreaming.js"></script>
   </head>
@@ -170,10 +171,10 @@
       </div>
     </div>
 
-    <div class="grid-y grid-frame cell-block-container">
-      <div class="cell cell-block-y medium-7">
-        <div class="grid-x">
-          <div class="cell medium-4 grid-padding-x">
+    <div class="grid-y grid-frame grid-padding-x cell-block-container">
+      <div class="cell cell-block-y medium-8">
+        <div class="grid-x grid-padding-y">
+          <div class="cell medium-4">
             <div class="grid-y grid-frame">
               <div class="cell shrink">
                 <h4>Motion Controls</h4>
@@ -215,12 +216,8 @@
         </div>
       </div>
       <div class="cell auto">
-        <div class="grid-x">
-          <div class="cell card medium-4">
-            <input id="chat-input" placeholder="Type a Message"></input>
-            <div id="chat-history" style="flex:1;overflow-y:auto;white-space:pre;"/></div>
-          </div>
-        </div>
+        <input id="chat-input" placeholder="Type a Message" style="width:100%"></input>
+        <div id="chat-history" style="height:100%;overflow-y:auto;white-space:pre;"/></div>
       </div>
       <div class="cell shrink">
         <div class="grid-x">
