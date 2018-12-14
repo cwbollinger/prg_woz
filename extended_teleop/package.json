@@ -28,14 +28,16 @@
     "foundation-sites": "^6.4.4-rc1",
     "jquery": "^3.3.1",
     "jquery-ui": "^1.12.1",
+    "ros2d": "^0.9.0",
     "roslibjs-client": "git+https://github.com/cwbollinger/roslibjs-client.git",
     "webrtc-adapter": "^6.1.0"
   },
   "devDependencies": {
-    "babel-core": "~6.26.0",
+    "babel-core": "^6.26.3",
     "babel-loader": "~7.1.2",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "css-loader": "^0.28.9",
+    "expose-loader": "^0.7.5",
     "style-loader": "^0.19.1",
     "uglifyjs-webpack-plugin": "^1.1.6",
     "webpack": "~3.10.0"

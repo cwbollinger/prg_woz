@@ -19,6 +19,20 @@ module.exports = {
         test: /\.js$/, // files ending with .js
         exclude: /node_modules(?!\/foundation-sites)/,
         use: "babel-loader" // use this (babel-core) loader
+      },
+      {
+        test: require.resolve('eventemitter2'),
+        use: [{
+          loader: 'expose-loader',
+          options: 'EventEmitter2'
+        }]
+      },
+      {
+        test: require.resolve('ros2d'),
+        use: [{
+          loader: 'expose-loader',
+          options: 'ROS2D'
+        }]
       }
     ]
   },

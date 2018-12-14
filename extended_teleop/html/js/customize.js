@@ -4,7 +4,7 @@ import GAMEPADTELEOP from './gamepad_teleop.js';
 import RosClient from 'roslibjs-client';
 import { ChatHistory } from './chat.js'
 import { ButtonIndicator } from './buttons.js'
-import { RobotMarker } from './map.js'
+import { initMap } from './map.js'
 
 // attach these to the global namespace so we can get them by name (weird but works)
 window.SPEECH = SPEECH;
@@ -210,12 +210,12 @@ function triggerSpeech(speechId) {
  * Setup all GUI elements when the page is loaded. 
  */
 export function init() {
-  console.log("REV UP BOIZ");
 
   // Connecting to ROS.
   rosClient = new RosClient({
     url : `ws://${window.location.hostname}:9090`
   });
+  window.rosClient = rosClient;
   console.log("ROS CLIENT:");
   console.log(rosClient);
 
@@ -225,6 +225,8 @@ export function init() {
   setupButtons('speech', 'question');
   setupButtons('speech', 'fact');
   setupButtons('speech', 'guide');
+
+  initMap(rosClient);
 
   const chatInput = document.getElementById('chat-input');
   const chatHistoryDiv = document.getElementById('chat-history');

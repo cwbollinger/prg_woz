@@ -1,5 +1,4 @@
-
-export class RobotMarker {
+class RobotMarker {
   constructor(robotName, color, size=1) {
     this.name = robotName;
     this.color = color;
@@ -35,4 +34,122 @@ export class RobotMarker {
     viewer.addObject(this.marker);
     viewer.addObject(this.markerText);
   }
+}
+
+export function initMap(rosClient) {
+  // Create the main viewer.
+  var viewer = new ROS2D.Viewer({
+    divID : 'cmd-div',
+    width : 600,
+    height : 600
+  });
+
+  // Setup the map client.
+  var gridClient = new ROS2D.OccupancyGridClient({
+    rosClient : rosClient,
+    rootObject : viewer.scene,
+    // Use this property in case of continuous updates			
+    continuous: true
+  });
+
+  // Scale the canvas to fit to the map
+  gridClient.on('change', function() {
+    viewer.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
+    viewer.shift(gridClient.currentGrid.pose.position.x, gridClient.currentGrid.pose.position.y);
+  });
+
+  let marker = new RobotMarker('test', 'red', 0.5);
+  marker.updateScaling(viewer.scene.scaleX, viewer.scene.scaleY);
+  marker.addMarker(viewer);
+
+  function onPoseUpdate(tf) {
+    console.log(tf);
+    marker.setLocation(tf.translation.x, -tf.translation.y);
+  }
+
+  rosClient.connection.getInstance().then((rosInstance)=>{
+    var tfClient = new ROSLIB.TFClient({
+      ros : rosInstance,
+      fixedFrame : '/map',
+      angularThres : 0.01,
+      transThres : 0.01
+    });
+    tfClient.subscribe('base_link', onPoseUpdate);
+
+    // on future connect events, rewire the tfClient to use the current rosInstance
+    rosClient.on('connected', function(rosInstance) {
+      tfClient.unsubscribe('base_link');
+      tfClient = new ROSLIB.TFClient({
+        ros : rosInstance,
+        fixedFrame : '/map',
+        angularThres : 0.01,
+        transThres : 0.01
+      });
+      tfClient.subscribe('base_link', onPoseUpdate);
+    });
+  });
+
+  var nav_goal = null;
+  var nav_marker_width = 1;
+  var nav_marker_height = 1;
+
+  rosClient.topic.subscribe('/move_base/current_goal', 'geometry_msgs/PoseStamped', function(msg) {
+    console.log(msg);
+    if(nav_goal == null) {
+      var dot_graphic = new createjs.Graphics();
+      dot_graphic.setStrokeStyle(1);
+      dot_graphic.beginFill(createjs.Graphics.getRGB(0,255,0));
+      nav_marker_width = 20/viewer.scene.scaleX;
+      nav_marker_height = 20/viewer.scene.scaleY;
+      dot_graphic.drawEllipse(-nav_marker_width/2,-nav_marker_height/2,nav_marker_width,nav_marker_height);
+      nav_goal = new createjs.Shape(dot_graphic);
+      viewer.addObject(nav_goal);
+    }
+  });
+
+  var s = null;
+  var marker_width = 0;
+  var marker_height = 0;
+
+  viewer.scene.on("stagemousedown", function(evt) {
+    console.log(evt);
+    x_offset = gridClient.currentGrid.pose.position.x;
+    y_offset = gridClient.currentGrid.pose.position.y;
+    x_click_map = evt.stageX/viewer.scene.scaleX+x_offset;
+    y_click_map = evt.stageY/viewer.scene.scaleY+y_offset;
+    //console.log('Transformed click coordinates');
+    console.log(x_click_map + ', ' +  y_click_map);
+
+    if(s == null) {
+      var dot_graphic = new createjs.Graphics();
+      dot_graphic.setStrokeStyle(1);
+      dot_graphic.beginFill(createjs.Graphics.getRGB(0,0,255));
+      marker_width = 10/viewer.scene.scaleX;
+      marker_height = 10/viewer.scene.scaleY;
+      dot_graphic.drawEllipse(-marker_width/2,-marker_height/2,marker_width,marker_height);
+      s = new createjs.Shape(dot_graphic);
+      viewer.addObject(s);
+    }
+    s.x = x_click_map;
+    s.y = y_click_map;
+
+    rosClient.topic.publish('/move_base_simple/goal', 'geometry_msgs/PoseStamped', {
+      header: {
+        frame_id: 'map'
+      },
+      pose: {
+        position: {
+          x: x_click_map,
+          y: -y_click_map,
+          z: 0.0
+        },
+        orientation: {
+          x: 0.0,
+          y: 0.0,
+          z: 0.0,
+          w: 1.0
+        }
+      }
+    });
+  });
 }
