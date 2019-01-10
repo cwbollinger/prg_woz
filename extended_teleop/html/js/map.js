@@ -3,9 +3,7 @@ class RobotMarker {
     this.name = robotName;
     this.color = color;
     this.size = size;
-    this.marker_width = size;
-    this.marker_height = size;
-    this.graphic = null;
+    this.marker_width = size; this.marker_height = size; this.graphic = null;
     this.scalingFactor = 0.1;
   }
 
@@ -40,8 +38,8 @@ export function initMap(rosClient) {
   // Create the main viewer.
   var viewer = new ROS2D.Viewer({
     divID : 'cmd-div',
-    width : 600,
-    height : 600
+    width : 500,
+    height : 500
   });
 
   // Setup the map client.
@@ -63,7 +61,7 @@ export function initMap(rosClient) {
   marker.addMarker(viewer);
 
   function onPoseUpdate(tf) {
-    console.log(tf);
+    //console.log(tf);
     marker.setLocation(tf.translation.x, -tf.translation.y);
   }
 
@@ -110,16 +108,46 @@ export function initMap(rosClient) {
   var s = null;
   var marker_width = 0;
   var marker_height = 0;
+  var x_click_map = 0;
+  var y_click_map = 0;
 
   viewer.scene.on("stagemousedown", function(evt) {
     console.log(evt);
     let x_offset = gridClient.currentGrid.pose.position.x;
     let y_offset = gridClient.currentGrid.pose.position.y;
     console.log(x_offset + ', ' +  y_offset);
-    let x_click_map = evt.stageX/viewer.scene.scaleX+x_offset;
-    let y_click_map = evt.stageY/viewer.scene.scaleY+y_offset+2.2; //why is this 2.2 offset needed to make the cursor work??
+    x_click_map = evt.stageX/viewer.scene.scaleX+x_offset;
+    y_click_map = evt.stageY/viewer.scene.scaleY+y_offset+2.2; //why is this 2.2 offset needed to make the cursor work??
     //console.log('Transformed click coordinates');
     console.log(x_click_map + ', ' +  y_click_map);
+  });
+
+  viewer.scene.on("stagemouseup", function(evt) {
+    console.log('MOUSE UP DETECTED!');
+    let x_offset = gridClient.currentGrid.pose.position.x;
+    let y_offset = gridClient.currentGrid.pose.position.y;
+    console.log(x_offset + ', ' +  y_offset);
+    let x_release_map = evt.stageX/viewer.scene.scaleX+x_offset;
+    let y_release_map = evt.stageY/viewer.scene.scaleY+y_offset+2.2; //why is this 2.2 offset needed to make the cursor work??
+
+    let dx = x_release_map - x_click_map;
+    let dy = -1 * (y_release_map - y_click_map);
+    let heading = Math.atan(dy, dx);
+    console.log(`heading: ${heading}`);
+    let w = Math.cos(heading / 2.0);
+    let x = 0;
+    let y = 0;
+    let z = Math.sin(heading / 2.0);
+    console.log(`w: ${w}`);
+    console.log(`x: ${x}`);
+    console.log(`y: ${y}`);
+    console.log(`z: ${z}`);
+    let o_quaternion = {
+      x: x,
+      y: y,
+      z: z,
+      w: w
+    };
 
     if(s == null) {
       var dot_graphic = new createjs.Graphics();
@@ -144,12 +172,7 @@ export function initMap(rosClient) {
           y: -y_click_map,
           z: 0.0
         },
-        orientation: {
-          x: 0.0,
-          y: 0.0,
-          z: 0.0,
-          w: 1.0
-        }
+        orientation: o_quaternion
       }
     });
   });
